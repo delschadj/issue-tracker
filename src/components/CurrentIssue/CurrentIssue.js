@@ -1,7 +1,5 @@
 import React from "react";
 
-import "./CurrentIssue.css";
-
 function CurrentIssue() {
   return (
     <div className="current-issues">
