@@ -3,13 +3,12 @@ import { useNavigate } from 'react-router-dom';
 
 import { getAuth } from "firebase/auth";
 import { bugsColRef, users_colRef } from '../../firebase';
-import { addDoc } from "firebase/firestore";
+import { addDoc, onSnapshot } from "firebase/firestore";
 
 function AddIssue() {
+
+  const [users, setUsers] = useState ("")
   
-
-  const navigate = useNavigate ();
-
   const [title, setTitle] = useState ("")
   const [description, setDescription] = useState ("")
   const [assignTo, setAssignTo] = useState ("")
@@ -20,10 +19,20 @@ function AddIssue() {
   const auth = getAuth();
   const user = auth.currentUser;
 
-  console.log ("title:" + title)
-  console.log ("description:" + description)
-  console.log ("assignTo:" + assignTo)
-  console.log ("priority:" + priority)
+  // Get all users
+  useEffect(() => {
+    onSnapshot (users_colRef, (snapshot) => {
+      let allUsers = []
+      snapshot.docs.forEach (user => {
+        allUsers.push ({ ...user.data(), id: user.id})
+      })
+  
+      setUsers (allUsers)
+  
+    })
+
+    
+  }, [users_colRef]);
 
   
 
@@ -75,15 +84,18 @@ function AddIssue() {
             placeholder="Description of Issue" />
         </label>
 
+
         <label>
-          Assign To
+          Assign to
           <select name="assignTo" onChange={(e) => setAssignTo(e.target.value)}>
-            <option value="Ron">Ron</option>
-            <option value="Morten">Morten</option>
-            <option value="Sara">Sara</option>
-            <option value="Divyansh">Divyansh</option>
+          {Array.isArray(users) && users.map(user => (
+              <option value={user.full_name}>{user.full_name}</option>
+              
+            
+            ))} 
           </select>
         </label>
+        
 
         <label>
           Priority

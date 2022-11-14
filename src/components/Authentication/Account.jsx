@@ -81,7 +81,7 @@ const Account = () => {
       <p>User Email: {user && currentUser["email"]}</p>
       <p>Full name: {user && currentUser["full_name"]}</p>
       <p>Username: {user && user.displayName}</p>
-      <p>Relgion: {user && currentUser["religion"]}</p>
+      <p>Role: {user && currentUser["role"]}</p>
 
       <div>
         <input type="file" onChange={handleChange}></input>

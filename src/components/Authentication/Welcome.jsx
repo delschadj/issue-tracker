@@ -8,11 +8,8 @@ import { users_colRef } from '../../firebase.js';
 function Welcome({emailApp}) {
 
   const [full_name, setFull_name] = useState ("")
-  const [religion, setReligion] = useState ("Christianity")
+  const [role, setRole] = useState ("Developer")
   const [error, setError] = useState ("")
-
-  console.log ("EmailApp: " + emailApp)
-  console.log ("Religion: " + religion)
 
   const navigate = useNavigate ();
 
@@ -25,7 +22,7 @@ function Welcome({emailApp}) {
       const docAdd = ({ 
         email: emailApp,
         full_name: full_name,
-        religion: religion,
+        role: role,
        })
 
       // Paste where email fits
@@ -55,14 +52,13 @@ function Welcome({emailApp}) {
         </div>
 
         <div className='flex flex-col py-2'>
-          <label for="religion" className="py-2 font-medium">Religion</label>
-          <select name="religion" className='border p-3' id="religion"  value={religion} 
-              onChange={(e) => setReligion(e.target.value)}>
-            <option value="Christianity">Christianity</option>
-            <option value="Islam">Islam</option>
-            <option value="Hinduism">Hinduism</option>
-            <option value="Buddhism">Buddhism</option>
-            <option value="Judaism">Judaism</option>
+          <label for="role" className="py-2 font-medium">Role</label>
+          <select name="role" className='border p-3' id="role"  value={role} 
+              onChange={(e) => setRole(e.target.value)}>
+            <option value="Admin">Admin</option>
+            <option value="Project Manager">Project Manager</option>
+            <option value="Developer">Developer</option>
+            <option value="Submitter">Submitter</option>
           </select>
         </div>
 
