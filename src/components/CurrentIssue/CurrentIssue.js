@@ -13,8 +13,11 @@ function CurrentIssue() {
   const [currentUser, setCurrentUser] = useState ({})
   const {user, logout} = UserAuth()
   const [mail, setMail] = useState(user.email)
+  const [priority, setPrio] = useState()
 
   console.log (currentUser) // Admin, Project Manager ...
+
+  console.log (priority)
 
   useEffect(()=> {
     setMail (user.email)
@@ -66,7 +69,19 @@ function CurrentIssue() {
   return (
     <div className="current-issues">
 
-          {bugs !== undefined && (currentUser.role === "Admin" || currentUser.role === "Project Manager") && bugs.map(bug => (
+      <h1>Priority</h1>
+      <button value="All" onClick={() => {setPrio("All")}} > All </button>
+      <button value="Extra-High" onClick={() => {setPrio("Extra-High")}} > Extra-High </button>
+      <button value="High" onClick={() => {setPrio("High")}}> High </button>
+      <button value="Medium" onClick={() => {setPrio("Medium")}}> Medium </button>
+      <button value="Low" onClick={() => {setPrio("Low")}}> Low </button>
+
+      <hr />
+
+          {bugs !== undefined && (currentUser.role === "Admin" || currentUser.role === "Project Manager") && bugs.filter(function (bug) {
+            if (priority === "All") return bug
+          else return bug.priority===priority;
+          }).map(bug => (
             <div className="indv-issue">
               <button onClick={() => {deleteDoc(doc(bugsColRef,bug.id))}} className="close-issue">Close Isssue</button>
               <li key={bug.id}>{bug.assignTo}</li>
@@ -79,7 +94,8 @@ function CurrentIssue() {
 
           
           {bugs !== undefined && currentUser.role !== "Admin" && currentUser.role !== "Project Manager" && bugs.filter(function (bug) {
-          return bug.assignTo === currentUser.full_name;
+            if (priority === "All") return bug.assignTo === currentUser.full_name;
+            else return bug.assignTo === currentUser.full_name && bug.priority===priority;
           }).map(bug => (
             <div className="indv-issue">
               <button onClick={() => {deleteDoc(doc(bugsColRef,bug.id))}} className="close-issue">Close Isssue</button>
