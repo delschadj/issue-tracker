@@ -35,7 +35,7 @@ const currentUser = getAuth ();
 const users_colRef = collection (db, "users")
 const questionsColRef = collection (db, "questions")
 const answersColRef = collection (db, "answers")
-const bugsColRef = collection (db, "bugs")
+const issuesColRef = collection (db, "issues")
 
 // realtime databases
 onSnapshot (users_colRef, (snapshot) => {
@@ -59,10 +59,10 @@ onSnapshot (answersColRef, (snapshot) => {
   })
 })
 
-onSnapshot (bugsColRef, (snapshot) => {
-  let bugs = []
-  snapshot.docs.forEach (bug => {
-    bugs.push ({ ...bug.data(), id: bug.id})
+onSnapshot (issuesColRef, (snapshot) => {
+  let issues = []
+  snapshot.docs.forEach (issue => {
+    issues.push ({ ...issue.data(), id: issue.id})
   })
 })
 
@@ -84,6 +84,6 @@ export async function upload (file, currentUser, setLoading ) {
 
 
 export const auth = getAuth(app);
-export { users_colRef, questionsColRef, answersColRef, storage, bugsColRef}
+export { users_colRef, questionsColRef, answersColRef, storage, issuesColRef}
 
 export default app

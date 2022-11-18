@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from 'react-router-dom';
 
 import { getAuth } from "firebase/auth";
-import { bugsColRef, users_colRef } from '../../firebase';
+import { issuesColRef, users_colRef } from '../../firebase';
 import { addDoc, onSnapshot } from "firebase/firestore";
 
 function AddIssue() {
@@ -50,7 +50,7 @@ function AddIssue() {
        })
 
       // Paste
-      addDoc(bugsColRef, docAdd)
+      addDoc(issuesColRef, docAdd)
       alert ("Success!")
     }
 

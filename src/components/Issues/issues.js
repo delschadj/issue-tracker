@@ -1,9 +1,9 @@
-import AddProject from "./AddProject";
-import CurrentProjects from "./CurrentProjects";
+import AddIssue from "./AddIsssue";
+import CurrentIssue from "./CurrentIssue";
 
 import React, { useState } from "react";
 
-function Home() {
+function Issues() {
   const [addIssue, setAddIssue] = useState(true);
 
   function showAddIssue() {
@@ -15,27 +15,24 @@ function Home() {
   }
 
   return (
-    <div className="Home">
-      <div className="projects">
-      <h1>Project</h1>
+    <div className="Issues">
+      <h1>Issue Tracker</h1>
       <div className="grey-card-contianer">
-        {addIssue ? <AddProject /> : <CurrentProjects />}
+        {addIssue ? <AddIssue /> : <CurrentIssue />}
       </div>
       <div className="view-selection-div">
         <button class="view-button" onClick={() => showCurrentIssue()}>
-          Current Projects
+          Current Issues
         </button>
         <button
           class="view-button active-button"
           onClick={() => showAddIssue()}
         >
-          Add Project
+          Add Issue
         </button>
       </div>
-      </div>
-      
     </div>
   );
 }
 
-export default Home;
+export default Issues;

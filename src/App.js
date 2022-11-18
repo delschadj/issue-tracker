@@ -3,7 +3,9 @@ import Login from "./components/Authentication/Login";
 import Signup from './components/Authentication/Signup';
 import Account from './components/Authentication/Account';
 import Welcome from "./components/Authentication/Welcome";
+
 import Home from "./components/Home/home";
+import Issues from "./components/Issues/issues";
 
 import { Route, Routes, Switch } from 'react-router-dom';
 import { AuthContextProvider } from './context/AuthContext';
@@ -27,6 +29,11 @@ function App() {
           <Route path='/home' element={
             <ProtectedRoute>
               <Home />
+          </ProtectedRoute>}/>
+
+          <Route path='/issues' element={
+            <ProtectedRoute>
+              <Issues />
           </ProtectedRoute>}/>
 
           
