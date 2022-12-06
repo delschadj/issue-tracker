@@ -1,15 +1,14 @@
 import React, {useState, useEffect, useRef} from 'react';
-import { useNavigate } from 'react-router-dom';
 import {UserAuth} from "../../context/AuthContext"
 import { query, where, onSnapshot, doc, deleteDoc } from "firebase/firestore";
 
 // Our databases
-import { users_colRef, issuesColRef } from '../../firebase.js';
+import { users_colRef, projectsColRef } from '../../firebase.js';
 
 function CurrentProjects() {
   const [error, setError] = useState()
 
-  const [issues, setIssues] = useState ()
+  const [projects, setProjects] = useState ()
   const [currentUser, setCurrentUser] = useState ({})
   const {user, logout} = UserAuth()
   const [mail, setMail] = useState(user.email)
@@ -42,18 +41,18 @@ function CurrentProjects() {
   }, [mail]);
 
   useEffect(() => {
-    onSnapshot (issuesColRef, (snapshot) => {
-      let allissues = []
-      snapshot.docs.forEach (issue => {
-        allissues.push ({ ...issue.data(), id: issue.id})
+    onSnapshot (projectsColRef, (snapshot) => {
+      let allProjects = []
+      snapshot.docs.forEach (project => {
+        allProjects.push ({ ...project.data(), id: project.id})
       })
   
-      setIssues (allissues)
+      setProjects (allProjects)
   
     })
-  }, [issuesColRef]);
+  }, [projectsColRef]);
 
-  const deleteissue = async (e) => {
+  const deleteProject = async (e) => {
     e.preventDefault()
     setError("")
 
@@ -67,7 +66,7 @@ function CurrentProjects() {
   }
 
   return (
-    <div className="current-issues">
+    <div className="current-project">
 
       <h1>Priority</h1>
       <button onClick={() => {setPrio("All")}} > All </button>
@@ -78,31 +77,31 @@ function CurrentProjects() {
 
       <hr />
 
-          {issues !== undefined && (currentUser.role === "Admin" || currentUser.role === "Project Manager") && issues.filter(function (issue) {
-            if (priority === "All") return issue
-          else return issue.priority===priority
-          }).map(issue => (
-            <div className="indv-issue">
-              <button onClick={() => {deleteDoc(doc(issuesColRef,issue.id))}} className="close-issue">Close Isssue</button>
-              <li key={issue.id}>{issue.assignTo}</li>
-              <li key={issue.id}>{issue.priority}</li>
-              <li key={issue.id}>{issue.title}</li>
-              <li key={issue.id}>{issue.description}</li>
+          {projects !== undefined && currentUser.role === "Admin" && projects.filter(function (project) {
+            if (priority === "All") return project
+          else return project.priority===priority
+          }).map(project => (
+            <div className="indv-project">
+              <button onClick={() => {deleteDoc(doc(projectsColRef,project.id))}} className="close-project">Close Isssue</button>
+              <li key={project.id}>{project.title}</li>
+              <li key={project.id}>{project.description}</li>
+              <li key={project.id}>{project.assignTo}</li>
+              <li key={project.id}>{project.priority}</li>
               <hr />
             </div>
           ))} 
 
           
-          {issues !== undefined && currentUser.role !== "Admin" && currentUser.role !== "Project Manager" && issues.filter(function (issue) {
-            if (priority === "All") return issue.assignTo === currentUser.full_name
-            else return issue.assignTo === currentUser.full_name && issue.priority===priority
-          }).map(issue => (
-            <div className="indv-issue">
-              <button onClick={() => {deleteDoc(doc(issuesColRef,issue.id))}} className="close-issue">Close Isssue</button>
-              <li key={issue.id}>{issue.assignTo}</li>
-              <li key={issue.id}>{issue.priority}</li>
-              <li key={issue.id}>{issue.title}</li>
-              <li key={issue.id}>{issue.description}</li>
+          {projects !== undefined && currentUser.role === "Project Manager" && projects.filter(function (project) {
+            if (priority === "All") return project.prjectManager === currentUser.full_name
+            else return project.assignTo === currentUser.full_name && priority.priority===priority
+          }).map(priority => (
+            <div className="indv-priority">
+              <button onClick={() => {deleteDoc(doc(projectsColRef,priority.id))}} className="close-priority">Close Isssue</button>
+              <li key={priority.id}>{priority.assignTo}</li>
+              <li key={priority.id}>{priority.priority}</li>
+              <li key={priority.id}>{priority.title}</li>
+              <li key={priority.id}>{priority.description}</li>
               <hr />
             </div>
           )) }

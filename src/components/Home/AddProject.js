@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from 'react-router-dom';
+import Multiselect from 'multiselect-react-dropdown';
 
-import { getAuth } from "firebase/auth";
-import { issuesColRef, users_colRef } from '../../firebase';
-import { addDoc, onSnapshot } from "firebase/firestore";
+import {UserAuth} from "../../context/AuthContext"
+import { projectsColRef, users_colRef } from '../../firebase';
+import { addDoc, onSnapshot, collection, query, where } from "firebase/firestore";
 
 function AddProject() {
 
   const [users, setUsers] = useState ("")
+  const [devs, setDevs] = useState ()
   
   const [title, setTitle] = useState ("")
   const [description, setDescription] = useState ("")
@@ -16,10 +17,35 @@ function AddProject() {
   const [assignTo, setAssignTo] = useState ([])
   const [priority, setPriority] = useState ("")
 
-  const [error, setError] = useState ("")
+  const [error, setError] = useState ("");
 
-  const auth = getAuth();
-  const user = auth.currentUser;
+  const [currentUser, setCurrentUser] = useState ({})
+  const {user, logout} = UserAuth()
+  const [mail, setMail] = useState(user.email)
+
+  // Get current user
+  useEffect(()=> {
+    setMail (user.email)
+    
+    const loadRabbit = async () => {
+      const q = query(users_colRef, where("email", "==", mail));
+
+      const unsubscribe = onSnapshot (q, (snapshot) => {
+        const currentUserArray = []
+        snapshot.docs.forEach (doc => {
+          currentUserArray.push ({ ...doc.data(), id: doc.id})
+        });
+    
+        setCurrentUser (currentUserArray[0])
+    
+        unsubscribe();
+      })
+    }
+
+    loadRabbit();
+    
+  }, [mail]);
+
 
   // Get all users
   useEffect(() => {
@@ -37,6 +63,24 @@ function AddProject() {
   }, [users_colRef]);
 
   
+  // Get all devs
+  const q = query(users_colRef, where("role", "==", "Developer"));
+  useEffect(() => {
+    onSnapshot (q, (snapshot) => {
+      let allDevs = []
+      snapshot.docs.forEach (dev => {
+        allDevs.push (dev.data().full_name)
+        
+        
+      })
+  
+      setDevs (allDevs)
+
+    })
+ 
+  }, [users_colRef]);
+
+
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -54,7 +98,7 @@ function AddProject() {
        })
 
       // Paste
-      addDoc(issuesColRef, docAdd)
+      addDoc(projectsColRef, docAdd)
       alert ("Success!")
     }
 
@@ -65,6 +109,8 @@ function AddProject() {
 
 
   return (
+    <>
+    {currentUser.role === "Admin" && 
     <div className="add-issue">
       <form>
 
@@ -101,16 +147,14 @@ function AddProject() {
 
         <label>
           Assign to
-          <select name="assignTo" onChange={(e) => setAssignTo(e.target.value)}>
-          {Array.isArray(users) && users.map(user => (
-              <option value={user.full_name}>{user.full_name}</option>
-              
-            
-            ))} 
-          </select>
+          <div>
+              <Multiselect
+              isObject={false}
+              options={devs}
+              />
+          </div>
         </label>
         
-
         <label>
           Priority
           <select name="priority" onChange={(e) => setPriority(e.target.value)}>
@@ -123,7 +167,17 @@ function AddProject() {
 
         <button type="submit" onClick={handleSubmit}>Add</button>
       </form>
-    </div>
+    </div>}
+
+    {currentUser.role !== "Admin" &&
+    <div>
+    <h1> Your current projects </h1>  
+    </div>}
+
+    </>
+      
+    
+    
   );
 }
 
