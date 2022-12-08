@@ -15,8 +15,9 @@ import Account from './components/Authentication/Account';
 import Welcome from "./components/Authentication/Welcome";
 
 import Home from "./components/Home/home";
-import Issues from "./components/Issues/issues";
+
 import Issues2 from "./scenes/issues/index"
+import Projects from "./scenes/projects/index"
 
 import { Route, Routes, Switch } from 'react-router-dom';
 import { AuthContextProvider } from './context/AuthContext';
@@ -43,12 +44,12 @@ function App() {
               <AuthContextProvider>
                 
                 <Routes>
-                  <Route path='/' element={<Login setEmailApp={setEmailApp} />} />
+                  <Route path='/login' element={<Login setEmailApp={setEmailApp} />} />
                   <Route  path='/signup' element={<Signup setEmailApp={setEmailApp} />} />
                   <Route  path="/welcome" element ={<Welcome emailApp={emailApp}/>}/>
 
 
-                  <Route path='/home' element={
+                  <Route path='/' element={
                     <ProtectedRoute>
                       <Home />
                   </ProtectedRoute>}/>
@@ -61,6 +62,11 @@ function App() {
                   <Route path='/issues' element={
                     <ProtectedRoute>
                       <Issues2 />
+                  </ProtectedRoute>}/>
+
+                  <Route path='/projects' element={
+                    <ProtectedRoute>
+                      <Projects />
                   </ProtectedRoute>}/>
 
                   <Route path='/team' element={

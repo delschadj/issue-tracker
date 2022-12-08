@@ -9,17 +9,17 @@ import SecurityOutlinedIcon from "@mui/icons-material/SecurityOutlined";
 import Header from "../../components/Header";
 
 // Our databases
-import { issuesColRef } from '../../firebase.js';
+import { projectsColRef } from '../../firebase.js';
 import { addDoc, onSnapshot } from "firebase/firestore";
 
-const CurrentIssue = () => {
+const CurrentProject = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   const [issues, setIssues] = useState ();
 
   // Get all issues
   useEffect(() => {
-    onSnapshot (issuesColRef, (snapshot) => {
+    onSnapshot (projectsColRef, (snapshot) => {
       let allUsers = []
       snapshot.docs.forEach (user => {
         allUsers.push ({ ...user.data(), id: user.id})
@@ -30,15 +30,15 @@ const CurrentIssue = () => {
     })
 
     
-  }, [issuesColRef]);
+  }, [projectsColRef]);
 
   console.log (issues)
 
   const columns = [
     
     {
-      field: "project",
-      headerName: "Project",
+      field: "title",
+      headerName: "Title",
       flex: 1,
       cellClassName: "name-column--cell",
     },
@@ -48,8 +48,8 @@ const CurrentIssue = () => {
       flex: 2,
     },
     {
-      field: "assignTo",
-      headerName: "Assigned To",
+      field: "projectManager",
+      headerName: "Project Manager",
       flex: 1,
     },
     {
@@ -84,7 +84,7 @@ const CurrentIssue = () => {
 
   return (
     <Box m="20px">
-      <Header title="ISSUES" subtitle="Manage all current issues" />
+      <Header title="PROJECTS" subtitle="Manage all current projects" />
       <Box
         m="40px 0 0 0"
         height="75vh"
@@ -120,4 +120,4 @@ const CurrentIssue = () => {
   );
 };
 
-export default CurrentIssue;
+export default CurrentProject;

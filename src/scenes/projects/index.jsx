@@ -1,38 +1,37 @@
-import AddIssue from "./AddIsssue";
-import CurrentIssue from "./CurrentIssue";
+import AddProject from "./AddProject.jsx";
+import CurrentIssue from "./CurrentProject.jsx";
 
 import React, { useState } from "react";
 
-function Issues() {
-  const [addIssue, setAddIssue] = useState(true);
+function Index() {
+  const [addProject, setProject] = useState(false);
 
-  function showAddIssue() {
-    setAddIssue(true);
+  function showaddProject() {
+    setProject(true);
   }
 
   function showCurrentIssue() {
-    setAddIssue(false);
+    setProject(false);
   }
 
   return (
     <div className="Issues">
-      <h1>Issue Tracker</h1>
       <div className="grey-card-contianer">
-        {addIssue ? <AddIssue /> : <CurrentIssue />}
+        {addProject ? <AddProject /> : <CurrentIssue />}
       </div>
       <div className="view-selection-div">
         <button class="view-button" onClick={() => showCurrentIssue()}>
-          Current Issues
+          Current Projects
         </button>
         <button
           class="view-button active-button"
-          onClick={() => showAddIssue()}
+          onClick={() => showaddProject()}
         >
-          Add Issue
+          Add Project
         </button>
       </div>
     </div>
   );
 }
 
-export default Issues;
+export default Index;

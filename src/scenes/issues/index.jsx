@@ -3,7 +3,7 @@ import CurrentIssue from "./CurrentIssue.jsx";
 
 import React, { useState } from "react";
 
-function Issues() {
+function Index() {
   const [addIssue, setAddIssue] = useState(false);
 
   function showAddIssue() {
@@ -34,4 +34,4 @@ function Issues() {
   );
 }
 
-export default Issues;
+export default Index;
