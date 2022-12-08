@@ -26,7 +26,7 @@ const firebaseConfig = {
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
-const db = getFirestore ()
+const db = getFirestore (app)
 
 const storage = getStorage();
 const currentUser = getAuth ();
@@ -92,6 +92,6 @@ export async function upload (file, currentUser, setLoading ) {
 
 
 export const auth = getAuth(app);
-export { users_colRef, questionsColRef, answersColRef, storage, issuesColRef, projectsColRef}
+export { db, users_colRef, questionsColRef, answersColRef, storage, issuesColRef, projectsColRef}
 
 export default app

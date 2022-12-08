@@ -17,7 +17,7 @@ import TimelineOutlinedIcon from "@mui/icons-material/TimelineOutlined";
 import MenuOutlinedIcon from "@mui/icons-material/MenuOutlined";
 import MapOutlinedIcon from "@mui/icons-material/MapOutlined";
 
-import { collection, query, where, getDocs } from "firebase/firestore";
+import { query, where, onSnapshot } from "firebase/firestore";
 
 // Our database
 import { users_colRef, upload } from '../../firebase.js';
@@ -50,9 +50,45 @@ const Sidebar = () => {
   const [currentUser, setUser] = useState ();
   const [userData, setUserData] = useState ();
 
-  
+  const auth = getAuth();
+
+  onAuthStateChanged(auth, (user) => {
+    if (user) {
+      // User is signed in, see docs for a list of available properties
+      // https://firebase.google.com/docs/reference/js/firebase.User
+      setUser (user)
+    } else {
+      // User is signed out
+    }
+  });
+
+  // Get current user once
+  useEffect(()=> {
+    
+    const loadRabbit = async () => {
+      const q = query(users_colRef, where("email", "==", currentUser["email"]));
+
+      const unsubscribe = onSnapshot (q, (snapshot) => {
+        const currentUserArray = []
+        snapshot.docs.forEach (doc => {
+          currentUserArray.push ({ ...doc.data(), id: doc.id})
+        });
+    
+        setUserData (currentUserArray[0])
+    
+        unsubscribe();
+      })
+    }
+
+    loadRabbit();
+    
+  }, [currentUser]);
+
+  console.log (userData)
 
   
+
+
 
   return (
     <Box
@@ -111,10 +147,10 @@ const Sidebar = () => {
                   fontWeight="bold"
                   sx={{ m: "10px 0 0 0" }}
                 >
-                  Username here
+                  {currentUser?.["displayName"]}
                 </Typography>
                 <Typography variant="h5" color={colors.greenAccent[500]}>
-                  Role
+                  {userData?.["role"]}
                 </Typography>
               </Box>
             </Box>
