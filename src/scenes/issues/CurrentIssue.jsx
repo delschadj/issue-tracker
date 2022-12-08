@@ -9,49 +9,54 @@ import SecurityOutlinedIcon from "@mui/icons-material/SecurityOutlined";
 import Header from "../../components/Header";
 
 // Our databases
-import { users_colRef } from '../../firebase.js';
+import { issuesColRef } from '../../firebase.js';
 import { addDoc, onSnapshot } from "firebase/firestore";
 
 const Team = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
-  const [users, setUsers] = useState ();
+  const [issues, setIssues] = useState ();
 
-  // Get all users
+  // Get all issues
   useEffect(() => {
-    onSnapshot (users_colRef, (snapshot) => {
+    onSnapshot (issuesColRef, (snapshot) => {
       let allUsers = []
       snapshot.docs.forEach (user => {
         allUsers.push ({ ...user.data(), id: user.id})
       })
   
-      setUsers (allUsers)
+      setIssues (allUsers)
   
     })
 
     
-  }, [users_colRef]);
+  }, [issuesColRef]);
 
-  console.log (users)
+  console.log (issues)
 
   const columns = [
-    { field: "id", headerName: "ID" },
+    
     {
-      field: "full_name",
-      headerName: "Name",
+      field: "project",
+      headerName: "Project",
       flex: 1,
       cellClassName: "name-column--cell",
     },
     {
-      field: "email",
-      headerName: "Email",
+      field: "description",
+      headerName: "Description",
+      flex: 2,
+    },
+    {
+      field: "assignTo",
+      headerName: "Assigned To",
       flex: 1,
     },
     {
-      field: "role",
-      headerName: "Access Level",
+      field: "priority",
+      headerName: "Priority",
       flex: 1,
-      renderCell: ({ row: { role } }) => {
+      renderCell: ({ row: { priority } }) => {
         return (
           <Box
             width="60%"
@@ -60,19 +65,16 @@ const Team = () => {
             display="flex"
             justifyContent="center"
             backgroundColor={
-                role === "admin"
+              priority === "High"
+                ? colors.redAccent[600]
+                : priority === "Medium"
                 ? colors.greenAccent[600]
-                : role === "manager"
-                ? colors.greenAccent[700]
-                : colors.greenAccent[700]
+                : colors.greenAccent[600]
             }
             borderRadius="4px"
           >
-            {role === "Admin" && <AdminPanelSettingsOutlinedIcon />}
-            {role === "Project Manager" && <SecurityOutlinedIcon />}
-            {role === "Developer" && <LockOpenOutlinedIcon />}
-            <Typography color={colors.grey[100]} sx={{ ml: "5px" }}>
-              {role}
+            <Typography color={colors.grey[0]} sx={{ ml: "5px" }}>
+              {priority}
             </Typography>
           </Box>
         );
@@ -82,7 +84,7 @@ const Team = () => {
 
   return (
     <Box m="20px">
-      <Header title="TEAM" subtitle="Managing the Team Members" />
+      <Header title="ISSUES" subtitle="Manage all current issues" />
       <Box
         m="40px 0 0 0"
         height="75vh"
@@ -112,7 +114,7 @@ const Team = () => {
           },
         }}
       >
-        <DataGrid checkboxSelection rows={users !== undefined && users} columns={columns} />
+        <DataGrid checkboxSelection rows={issues !== undefined && issues} columns={columns} />
       </Box>
     </Box>
   );

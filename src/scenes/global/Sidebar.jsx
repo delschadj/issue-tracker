@@ -17,7 +17,7 @@ import TimelineOutlinedIcon from "@mui/icons-material/TimelineOutlined";
 import MenuOutlinedIcon from "@mui/icons-material/MenuOutlined";
 import MapOutlinedIcon from "@mui/icons-material/MapOutlined";
 
-import { collection, query, where, getDocs } from "firebase/firestore";
+import { query, where, onSnapshot } from "firebase/firestore";
 
 // Our database
 import { users_colRef, upload } from '../../firebase.js';
@@ -46,11 +46,6 @@ const Sidebar = () => {
   const colors = tokens(theme.palette.mode);
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [selected, setSelected] = useState("Dashboard");
-
-  const [currentUser, setUser] = useState ();
-  const [userData, setUserData] = useState ();
-
-  
 
   
 
@@ -137,7 +132,7 @@ const Sidebar = () => {
               Routes
             </Typography>
             <Item
-              title="Manage Team - ADMIN only"
+              title="Manage Team"
               to="/team"
               icon={<PeopleOutlinedIcon />}
               selected={selected}

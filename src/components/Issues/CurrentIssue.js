@@ -84,10 +84,12 @@ function CurrentIssue() {
           }).map(issue => (
             <div className="indv-issue">
               <button onClick={() => {deleteDoc(doc(issuesColRef,issue.id))}} className="close-issue">Close Isssue</button>
-              <li key={issue.id}>{issue.assignTo}</li>
-              <li key={issue.id}>{issue.priority}</li>
-              <li key={issue.id}>{issue.title}</li>
-              <li key={issue.id}>{issue.description}</li>
+              <li key={issue.id}>Project: {issue.project}</li>
+              <li key={issue.id}>Title: {issue.title}</li>
+              <li key={issue.id}>Description: {issue.description}</li>
+
+              <li key={issue.id}>Assign to: {issue.assignTo}</li>
+              <li key={issue.id}>Prio: {issue.priority}</li>
               <hr />
             </div>
           ))} 

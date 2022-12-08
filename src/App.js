@@ -6,7 +6,7 @@ import { ColorModeContext, useMode } from "./theme";
 import Topbar from "./scenes/global/Topbar"
 import Sidebar from "./scenes/global/Sidebar";
 import Dashboard from "./scenes/dashboard/dashboard";
-import Team from "./scenes/team";
+import Team from "./scenes/team/Index";
 
 
 import Login from "./components/Authentication/Login";
@@ -16,6 +16,7 @@ import Welcome from "./components/Authentication/Welcome";
 
 import Home from "./components/Home/home";
 import Issues from "./components/Issues/issues";
+import Issues2 from "./scenes/issues/index"
 
 import { Route, Routes, Switch } from 'react-router-dom';
 import { AuthContextProvider } from './context/AuthContext';
@@ -59,7 +60,7 @@ function App() {
 
                   <Route path='/issues' element={
                     <ProtectedRoute>
-                      <Issues />
+                      <Issues2 />
                   </ProtectedRoute>}/>
 
                   <Route path='/team' element={
