@@ -6,8 +6,7 @@ import { ColorModeContext, useMode } from "./theme";
 import Topbar from "./scenes/global/Topbar"
 import Sidebar from "./scenes/global/Sidebar";
 import Dashboard from "./scenes/dashboard/dashboard";
-
-//  import Team from "./scenes/team";
+import Team from "./scenes/team";
 
 
 import Login from "./components/Authentication/Login";
@@ -65,7 +64,7 @@ function App() {
 
                   <Route path='/team' element={
                     <ProtectedRoute>
-                      
+                    <Team/>
                   </ProtectedRoute>}/>
 
                   <Route path='/account' element={ 
