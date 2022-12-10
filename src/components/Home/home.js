@@ -12,17 +12,18 @@ function Home() {
 
   const [currentUser, setCurrentUser] = useState ({})
   const {user, logout} = UserAuth()
+  const [mail, setMail] = useState(user.email)
 
   // Get current user
   useEffect(()=> {
+    setMail (user.email)
     
     const loadRabbit = async () => {
-      const q = query(users_colRef, where("email", "==", user.email));
+      const q = query(users_colRef, where("email", "==", mail));
 
       const unsubscribe = onSnapshot (q, (snapshot) => {
         const currentUserArray = []
         snapshot.docs.forEach (doc => {
-          
           currentUserArray.push ({ ...doc.data(), id: doc.id})
         });
     
@@ -34,9 +35,7 @@ function Home() {
 
     loadRabbit();
     
-  }, []);
-
-  console.log (currentUser.role)
+  }, [mail]);
 
   function showAddIssue() {
     setAddIssue(true);
@@ -49,8 +48,10 @@ function Home() {
   return (
     <div className="Home">
 
+      <h1>HOME</h1>
+
       { 
-        currentUser.role === "Admin" && 
+        currentUser.role !== undefined && currentUser.role === "Admin" && 
         <div className="projects-admin">
         <h1>Project</h1>
         
@@ -73,7 +74,7 @@ function Home() {
     }
 
       { 
-        currentUser.role == "Developer" && 
+        currentUser.role !== undefined && currentUser.role == "Developer" && 
         <div className="projects-manager-devs">
           <h1>Current Projects</h1>
             <li>This should redirect to project 1</li>

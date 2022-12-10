@@ -15,9 +15,9 @@ import { addDoc, onSnapshot } from "firebase/firestore";
 const CurrentProject = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
-  const [issues, setIssues] = useState ();
+  const [projects, setProjects] = useState ();
 
-  // Get all issues
+  // Get all projects
   useEffect(() => {
     onSnapshot (projectsColRef, (snapshot) => {
       let allUsers = []
@@ -25,14 +25,12 @@ const CurrentProject = () => {
         allUsers.push ({ ...user.data(), id: user.id})
       })
   
-      setIssues (allUsers)
+      setProjects (allUsers)
   
     })
 
     
   }, [projectsColRef]);
-
-  console.log (issues)
 
   const columns = [
     
@@ -87,7 +85,7 @@ const CurrentProject = () => {
       <Header title="PROJECTS" subtitle="Manage all current projects" />
       <Box
         m="40px 0 0 0"
-        height="75vh"
+        height="50vh"
         sx={{
           "& .MuiDataGrid-root": {
             border: "none",
@@ -114,7 +112,7 @@ const CurrentProject = () => {
           },
         }}
       >
-        <DataGrid checkboxSelection rows={issues !== undefined && issues} columns={columns} />
+        <DataGrid checkboxSelection rows={projects !== undefined && projects} columns={columns} />
       </Box>
     </Box>
   );

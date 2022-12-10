@@ -21,7 +21,7 @@ import { query, where, onSnapshot } from "firebase/firestore";
 
 // Our database
 import { users_colRef, upload } from '../../firebase.js';
-import { getAuth, onAuthStateChanged } from "firebase/auth";
+import {UserAuth} from "../../context/AuthContext"
 
 const Item = ({ title, to, icon, selected, setSelected }) => {
   const theme = useTheme();

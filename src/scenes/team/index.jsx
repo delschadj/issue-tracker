@@ -12,7 +12,7 @@ import Header from "../../components/Header";
 import { users_colRef } from '../../firebase.js';
 import { addDoc, onSnapshot } from "firebase/firestore";
 
-const Team = () => {
+const Team = ({currentUserApp}) => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   const [users, setUsers] = useState ();
@@ -32,7 +32,8 @@ const Team = () => {
     
   }, [users_colRef]);
 
-  console.log (users)
+  if (currentUserApp !== undefined)
+  console.log (currentUserApp.role)
 
   const columns = [
     { field: "id", headerName: "ID" },
@@ -85,7 +86,7 @@ const Team = () => {
       <Header title="TEAM" subtitle="Managing the Team Members" />
       <Box
         m="40px 0 0 0"
-        height="75vh"
+        height="50vh"
         sx={{
           "& .MuiDataGrid-root": {
             border: "none",

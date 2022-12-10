@@ -36,12 +36,15 @@ function App() {
         <CssBaseline/>
 
           <div className="app">
-            <Sidebar isSidebar={isSidebar} />
+          <Sidebar isSidebar={isSidebar} />
+          <AuthContextProvider>
+            
+            
 
             <main className="content">
               <Topbar setIsSidebar={setIsSidebar} />
 
-              <AuthContextProvider>
+              
                 
                 <Routes>
                   <Route path='/login' element={<Login setEmailApp={setEmailApp} />} />
@@ -81,8 +84,9 @@ function App() {
                   
                   
                 </Routes>
-              </AuthContextProvider>
+              
             </main>
+            </AuthContextProvider>
 
           </div>
 

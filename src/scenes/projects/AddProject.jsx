@@ -1,19 +1,34 @@
 import React, { useEffect, useState } from "react";
+import Select from 'react-select'
 import Multiselect from 'multiselect-react-dropdown';
 
 import {UserAuth} from "../../context/AuthContext"
 import { projectsColRef, users_colRef } from '../../firebase';
 import { addDoc, onSnapshot, collection, query, where } from "firebase/firestore";
 
+import { Box, Button, TextField } from "@mui/material";
+import { Field, Form, Formik, FormikProps } from 'formik';
+import * as yup from "yup";
+import useMediaQuery from "@mui/material/useMediaQuery";
+import Header from "../../components/Header";
+
 function AddProject() {
 
+  const isNonMobile = useMediaQuery("(min-width:600px)");
   const [users, setUsers] = useState ("")
   const [devs, setDevs] = useState ()
+  const options = [
+    { value: 'Low', label: 'Low' },
+    { value: 'Medium', label: 'Medium' },
+    { value: 'High', label: 'High' }
+  ]
+
+  const [projectManager2, setProjectManager2] = useState ([])
   
   const [title, setTitle] = useState ("")
   const [description, setDescription] = useState ("")
 
-  const [projectManager, setProjectManager] = useState ("")
+  const [projectManager, setProjectManager] = useState ("Hikaru Nakamura")
   const [assignTo, setAssignTo] = useState ([])
   const [priority, setPriority] = useState ("")
 
@@ -62,11 +77,27 @@ function AddProject() {
     
   }, [users_colRef]);
 
+  // Get all PMs
+  const qPM = query(users_colRef, where("role", "==", "Project Manager"));
+  useEffect(() => {
+    onSnapshot (qPM, (snapshot) => {
+      let allPMs = []
+      snapshot.docs.forEach (dev => {
+        allPMs.push (dev.data().full_name)
+        
+        
+      })
+  
+      setProjectManager2 (allPMs)
+
+    })
+ 
+  }, [users_colRef]);
   
   // Get all devs
-  const q = query(users_colRef, where("role", "==", "Developer"));
+  const qDev = query(users_colRef, where("role", "==", "Developer"));
   useEffect(() => {
-    onSnapshot (q, (snapshot) => {
+    onSnapshot (qDev, (snapshot) => {
       let allDevs = []
       snapshot.docs.forEach (dev => {
         allDevs.push (dev.data().full_name)
@@ -111,42 +142,61 @@ function AddProject() {
   return (
     <>
     {currentUser.role === "Admin" && 
-    <div className="add-issue">
-      <form>
 
-      <label>
-          Title
+    <Box m="20px">
+    <Header title="CREATE PROJECT" subtitle="Create a New User Profile" />
 
-          <input 
-            value={title} 
-            onChange={(e) => setTitle(e.target.value)} 
-            type="text" 
-            placeholder="Title" />
-
-        </label>
+    <Formik
+      onSubmit={handleSubmit}
+      initialValues={initialValues}
+      validationSchema={checkoutSchema}
+    >
+      {({
+        values,
+        errors,
+        touched,
+        handleBlur,
+        handleChange,
+        handleSubmit,
+      }) => (
+        <form onSubmit={handleSubmit}>
+          <Box
+            display="grid"
+            gap="30px"
+            gridTemplateColumns="repeat(4, minmax(0, 1fr))"
+            sx={{
+              "& > div": { gridColumn: isNonMobile ? undefined : "span 4" },
+            }}
+          >
+            <TextField
+              fullWidth
+              variant="filled"
+              type="text"
+              label="Title"
+              onBlur={handleBlur}
+              onChange={handleChange}
+              value={values.title}
+              name="title"
+              error={!!touched.title && !!errors.title}
+              helperText={touched.title && errors.title}
+              sx={{ gridColumn: "span 4" }}
+            />
+            <TextField
+              fullWidth
+              variant="filled"
+              type="text"
+              label="Description"
+              onBlur={handleBlur}
+              onChange={handleChange}
+              value={values.description}
+              name="description"
+              error={!!touched.description && !!errors.description}
+              helperText={touched.description && errors.description}
+              sx={{ gridColumn: "span 4" }}
+            />
 
         <label>
-          Description
-          <input 
-            value={description} 
-            onChange={(e) => setDescription(e.target.value)} 
-            type="text" 
-            placeholder="Description of Project" />
-        </label>
-
-        <label>
-          Project Manager
-          <select name="assignTo" onChange={(e) => setProjectManager(e.target.value)}>
-          {Array.isArray(users) && users.filter(function (user) {
-            return user.role === "Project Manager"
-          }).map(user => (
-              <option value={user.full_name}>{user.full_name}</option>
-            ))}
-          </select>
-        </label>
-
-        <label>
-          Assign to
+          <h2> Developers </h2>
           <div>
               <Multiselect
               isObject={false}
@@ -154,20 +204,39 @@ function AddProject() {
               />
           </div>
         </label>
-        
+
         <label>
-          Priority
-          <select name="priority" onChange={(e) => setPriority(e.target.value)}>
-            <option value="Low">Low</option>
-            <option value="Medium">Medium</option>
-            <option value="High">High</option>
-            <option value="Extra-High">Extra-High</option>
-          </select>
+          <h2> Project Managers </h2>
+          <div>
+              <Multiselect
+              isObject={false}
+              options={projectManager2}
+              
+              />
+          </div>
         </label>
 
-        <button type="submit" onClick={handleSubmit}>Add</button>
-      </form>
-    </div>}
+        <label>
+          <h2> Proprity </h2>
+          <div>
+          <Select options={options} />
+          </div>
+        </label>
+
+        
+
+          </Box>
+          <Box display="flex" justifyContent="end" mt="20px">
+            <Button type="submit" color="secondary" variant="contained">
+              Create Project
+            </Button>
+          </Box>
+        </form>
+      )}
+    </Formik>
+    </Box>
+    
+    }
 
     {currentUser.role !== "Admin" &&
     <div>
@@ -180,5 +249,28 @@ function AddProject() {
     
   );
 }
+
+const phoneRegExp =
+  /^((\+[1-9]{1,4}[ -]?)|(\([0-9]{2,3}\)[ -]?)|([0-9]{2,4})[ -]?)*?[0-9]{3,4}[ -]?[0-9]{3,4}$/;
+
+const checkoutSchema = yup.object().shape({
+  firstName: yup.string().required("required"),
+  lastName: yup.string().required("required"),
+  email: yup.string().email("invalid email").required("required"),
+  contact: yup
+    .string()
+    .matches(phoneRegExp, "Phone number is not valid")
+    .required("required"),
+  address1: yup.string().required("required"),
+  address2: yup.string().required("required"),
+});
+const initialValues = {
+  firstName: "",
+  lastName: "",
+  email: "",
+  contact: "",
+  address1: "",
+  address2: "",
+};
 
 export default AddProject;
