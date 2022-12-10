@@ -6,7 +6,7 @@ import { ColorModeContext, useMode } from "./theme";
 import Topbar from "./scenes/global/Topbar"
 import Sidebar from "./scenes/global/Sidebar";
 import Dashboard from "./scenes/dashboard/dashboard";
-import Team from "./scenes/team/Index";
+import Team from "./scenes/team/index";
 
 
 import Login from "./components/Authentication/Login";
