@@ -82,7 +82,7 @@ const Team = ({currentUserApp}) => {
   ];
 
   return (
-    <Box m="20px">
+    <Box m="50px">
       <Header title="TEAM" subtitle="Managing the Team Members" />
       <Box
         m="40px 0 0 0"

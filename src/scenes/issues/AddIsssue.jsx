@@ -6,70 +6,52 @@ import { projectsColRef ,issuesColRef, users_colRef } from '../../firebase';
 import { addDoc, onSnapshot, collection, query, where } from "firebase/firestore";
 
 import { Box, Button, TextField } from "@mui/material";
-import { Formik } from "formik";
+import { Field, Form, Formik, FormikProps, useField } from 'formik';
 import Select from 'react-select'
 import * as yup from "yup";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import Header from "../../components/Header";
 
-const AddIssue = () => {
+const AddIssue = ({button}) => {
   const isNonMobile = useMediaQuery("(min-width:600px)");
-  const [devs, setDevs] = useState ()
+  const [users, setUsers] = useState ("")
+  const [developers, setDevs] = useState ()
+  const [projects, setProjects] = useState ()
   const options = [
     { value: 'Low', label: 'Low' },
     { value: 'Medium', label: 'Medium' },
     { value: 'High', label: 'High' }
   ]
-  const [projects, setProjects] = useState ()
-  
 
-  const [title, setTitle] = useState ("")
-  const [description, setDescription] = useState ("")
-  const [project, setProject] = useState ([])
-  const [assignTo, setAssignTo] = useState ([])
-  const [priority, setPriority] = useState ("")
+  const [projectManagers, setProjectManagers] = useState ([])
 
-  const [error, setError] = useState ("");
-
-  const [currentUser, setCurrentUser] = useState ({})
-  const {user, logout} = UserAuth()
-  const [mail, setMail] = useState(user.email)
-
-  // Get current user
-  useEffect(()=> {
-    setMail (user.email)
-    
-    const loadRabbit = async () => {
-      const q = query(users_colRef, where("email", "==", mail));
-
-      const unsubscribe = onSnapshot (q, (snapshot) => {
-        const currentUserArray = []
-        snapshot.docs.forEach (doc => {
-          currentUserArray.push ({ ...doc.data(), id: doc.id})
-        });
-    
-        setCurrentUser (currentUserArray[0])
-    
-        unsubscribe();
+  // Get all users
+  useEffect(() => {
+    onSnapshot (users_colRef, (snapshot) => {
+      let allUsers = []
+      snapshot.docs.forEach (user => {
+        allUsers.push ({ ...user.data(), id: user.id})
       })
-    }
-
-    loadRabbit();
-    
-  }, [mail]);
   
-  // Get all devs
+      setUsers (allUsers)
+  
+    })
+
+    
+  }, [users_colRef]);
+  
+  // Get all developers
   const qDev = query(users_colRef, where("role", "==", "Developer"));
   useEffect(() => {
     onSnapshot (qDev, (snapshot) => {
-      let allDevs = []
+      let allDevelopers = []
       snapshot.docs.forEach (dev => {
-        allDevs.push (dev.data().full_name)
+        allDevelopers.push (dev.data().full_name)
         
         
       })
   
-      setDevs (allDevs)
+      setDevs (allDevelopers)
 
     })
  
@@ -80,47 +62,51 @@ const AddIssue = () => {
     onSnapshot (projectsColRef, (snapshot) => {
       let allProjects = []
       snapshot.docs.forEach (project => {
-        allProjects.push ({value: project.data()["title"] , label: project.data()["title"]})
+        allProjects.push (project.data().title)
+        
+        
       })
   
       setProjects (allProjects)
-  
+
     })
-    
+ 
   }, [projectsColRef]);
 
+  console.log (projects)
 
-  const handleSubmit = async (e) => {
-    e.preventDefault()
-    setError("")
 
-    try{
-      // Object to paste
-      const docAdd = ({ 
-        description: description,
-        assignTo: assignTo,
-        priority: priority,
-       })
+  const handleFormSubmit = (values) => {
 
-      // Paste
-      console.log (docAdd)
-    }
+    const docAdd = { 
+      description: values.description,
+      project: values.project,
+      assignTo: values.assignTo,
+      priority: values.priority,
+     }
 
-    catch (e) {
-      console.log (e.message)
-    }
-  }
+    console.log(docAdd);
+
+    addDoc(issuesColRef, docAdd)
+    alert ("Succesfully added!")
+  };
+
+  
 
 
   return (
     <>
-    
 
-    <Box m="20px">
-    <Header title="CREATE ISSUE" subtitle="Create a New issue/ticket" />
+    <Box m="50px">
+    <Header title="CREATE ISSUE" subtitle="Create a New issue / ticket." />
 
     <Formik
-      onSubmit={handleSubmit}
+      onSubmit={(values, { resetForm }) => {
+
+        handleFormSubmit (values);
+        resetForm();
+  
+  }}
       initialValues={initialValues}
       validationSchema={checkoutSchema}
     >
@@ -147,55 +133,52 @@ const AddIssue = () => {
               type="text"
               label="Description"
               onBlur={handleBlur}
-              onChange={(e) => setDescription(e.target.value)}
+              onChange={handleChange}
               value={values.description}
               name="description"
               error={!!touched.description && !!errors.description}
               helperText={touched.description && errors.description}
               sx={{ gridColumn: "span 4" }}
             />
-
-        <label>
-          <h2> Project </h2>
-          <div>
-            <Select 
-              options={projects} 
-            />
-          </div>
-        </label>
-
-        <label>
-          <h2> Assign to </h2>
-          <div>
-              <Multiselect
-              isObject={false}
-              options={devs}
-              value={assignTo}
-              onChange={(e) => setAssignTo(e.target.value)}
-              />
-          </div>
-        </label>
-
-        <label>
-          <h2> Priority </h2>
-          <div>
-            <Select 
-              options={options}
-            />
-          </div>
-        </label>
-
         
+        <div id="checkbox-group">
+          <h2> Project </h2>
+          <Field as="select" name="project">
+              {projects && projects.map(function(project, index){
+                    return <option value={project}> {project} </option>;
+                  })}
+          </Field>
+        </div>
+
+        <div id="checkbox-group">
+          <h2> Assign To </h2>
+          <div role="group" aria-labelledby="checkbox-group">
+              {developers && developers.map(function(name, index){
+                    return <label> <Field type="checkbox" name="assignTo" value={name} /> {name} </label> ;
+                  })}
+          </div>
+        </div>
+          
+        <div>
+            <h2> Priority </h2>
+            <Field as="select" name="priority">
+             <option value="Low"> Low </option>
+             <option value="Medium"> Medium </option>
+             <option value="High"> High </option>
+           </Field>
+        </div>
 
           </Box>
-          <Box display="flex" justifyContent="end" mt="20px">
-            <Button type="submit" color="secondary" variant="contained">
+          <Box display="flex" justifyContent="center" mt="60px">
+            <Button onClick={handleSubmit} type="submit" variant="contained">
               Create Project
-            </Button>
+            </Button >
           </Box>
         </form>
       )}
     </Formik>
+
+      {button}
     </Box>
 
     </>
@@ -205,27 +188,18 @@ const AddIssue = () => {
   );
 }
 
-const phoneRegExp =
-  /^((\+[1-9]{1,4}[ -]?)|(\([0-9]{2,3}\)[ -]?)|([0-9]{2,4})[ -]?)*?[0-9]{3,4}[ -]?[0-9]{3,4}$/;
-
 const checkoutSchema = yup.object().shape({
-  firstName: yup.string().required("required"),
-  lastName: yup.string().required("required"),
-  email: yup.string().email("invalid email").required("required"),
-  contact: yup
-    .string()
-    .matches(phoneRegExp, "Phone number is not valid")
-    .required("required"),
-  address1: yup.string().required("required"),
-  address2: yup.string().required("required"),
+  description: yup.string().required("required"),
+  project: yup.string().required("required"),
+  project: yup.string().required("required"),
+  priority: yup.string().required("required"),
+  
 });
 const initialValues = {
-  firstName: "",
-  lastName: "",
-  email: "",
-  contact: "",
-  address1: "",
-  address2: "",
+  description: "",
+  project: "",
+  assignTo: "",
+  priority: "Low",
 };
 
 export default AddIssue;

@@ -24,12 +24,6 @@ function AddProject() {
   ]
 
   const [projectManagers, setProjectManagers] = useState ([])
-  
-  const [title, setTitle] = useState ("")
-  const [description, setDescription] = useState ("")
-
-  const [assignTo, setAssignTo] = useState ([])
-  const [priority, setPriority] = useState ("")
 
   const [error, setError] = useState ("");
 
@@ -117,7 +111,7 @@ function AddProject() {
     const docAdd = { 
       title: values.title,
       description: values.description,
-      projectManagers: values.projectManagers,
+      projectManager: values.projectManager,
       developers: values.developers,
       priority: values.priority,
      }
@@ -125,6 +119,7 @@ function AddProject() {
     console.log(docAdd);
 
     addDoc(projectsColRef, docAdd)
+    alert ("Succesfully added!")
   };
 
 
@@ -132,11 +127,16 @@ function AddProject() {
     <>
     {currentUser.role === "Admin" && 
 
-    <Box m="20px">
+    <Box m="50px">
     <Header title="CREATE PROJECT" subtitle="Create a New User Profile" />
 
     <Formik
-      onSubmit={handleFormSubmit}
+      onSubmit={(values, { resetForm }) => {
+
+        handleFormSubmit (values);
+        resetForm();
+  
+  }}
       initialValues={initialValues}
       validationSchema={checkoutSchema}
     >
@@ -197,11 +197,11 @@ function AddProject() {
 
         <div id="checkbox-group">
           <h2> Project Managers </h2>
-          <div role="group" aria-labelledby="checkbox-group">
-              {projectManagers.map(function(name, index){
-                    return <label> <Field type="checkbox" name="projectManagers" value={name} /> {name} </label> ;
+          <Field as="select" name="projectManager">
+              {projectManagers.map(function(projectManager, index){
+                    return <option value={projectManager}> {projectManager} </option>;
                   })}
-          </div>
+          </Field>
         </div>
           
         
@@ -258,21 +258,16 @@ function AddProject() {
 const checkoutSchema = yup.object().shape({
   title: yup.string().required("required"),
   description: yup.string().required("required"),
-  /*email: yup.string().email("invalid email").required("required"),
-  contact: yup
-    .string()
-    .matches(phoneRegExp, "Phone number is not valid")
-    .required("required"),
-  address1: yup.string().required("required"),
-  address2: yup.string().required("required"),
-  */
+  priority: yup.string().required("required"),
+  projectManager: yup.string().required("required"),
+  
 });
 const initialValues = {
   title: "",
   description: "",
-  priority: "",
+  priority: "Low",
   developers: [],
-  projectManagers: []
+  projectManager: ""
 };
 
 export default AddProject;

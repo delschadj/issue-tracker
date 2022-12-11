@@ -12,7 +12,7 @@ import Header from "../../components/Header";
 import { issuesColRef } from '../../firebase.js';
 import { addDoc, onSnapshot } from "firebase/firestore";
 
-const CurrentIssue = () => {
+const CurrentIssue = ({button}) => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   const [issues, setIssues] = useState ();
@@ -50,7 +50,7 @@ const CurrentIssue = () => {
     {
       field: "assignTo",
       headerName: "Assigned To",
-      flex: 1,
+      flex: 2,
     },
     {
       field: "priority",
@@ -83,7 +83,7 @@ const CurrentIssue = () => {
   ];
 
   return (
-    <Box m="20px">
+    <Box m="50px">
       <Header title="ISSUES" subtitle="Manage all current issues" />
       <Box
         m="40px 0 0 0"
@@ -116,6 +116,7 @@ const CurrentIssue = () => {
       >
         <DataGrid checkboxSelection rows={issues !== undefined && issues} columns={columns} />
       </Box>
+      {button}
     </Box>
   );
 };
