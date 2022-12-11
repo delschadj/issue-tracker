@@ -7,7 +7,7 @@ import { projectsColRef, users_colRef } from '../../firebase';
 import { addDoc, onSnapshot, collection, query, where } from "firebase/firestore";
 
 import { Box, Button, TextField } from "@mui/material";
-import { Field, Form, Formik, FormikProps } from 'formik';
+import { Field, Form, Formik, FormikProps, useField } from 'formik';
 import * as yup from "yup";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import Header from "../../components/Header";
@@ -16,19 +16,18 @@ function AddProject() {
 
   const isNonMobile = useMediaQuery("(min-width:600px)");
   const [users, setUsers] = useState ("")
-  const [devs, setDevs] = useState ()
+  const [developers, setDevs] = useState ()
   const options = [
     { value: 'Low', label: 'Low' },
     { value: 'Medium', label: 'Medium' },
     { value: 'High', label: 'High' }
   ]
 
-  const [projectManager2, setProjectManager2] = useState ([])
+  const [projectManagers, setProjectManagers] = useState ([])
   
   const [title, setTitle] = useState ("")
   const [description, setDescription] = useState ("")
 
-  const [projectManager, setProjectManager] = useState ("Hikaru Nakamura")
   const [assignTo, setAssignTo] = useState ([])
   const [priority, setPriority] = useState ("")
 
@@ -88,24 +87,24 @@ function AddProject() {
         
       })
   
-      setProjectManager2 (allPMs)
+      setProjectManagers (allPMs)
 
     })
  
   }, [users_colRef]);
   
-  // Get all devs
+  // Get all developers
   const qDev = query(users_colRef, where("role", "==", "Developer"));
   useEffect(() => {
     onSnapshot (qDev, (snapshot) => {
-      let allDevs = []
+      let allDevelopers = []
       snapshot.docs.forEach (dev => {
-        allDevs.push (dev.data().full_name)
+        allDevelopers.push (dev.data().full_name)
         
         
       })
   
-      setDevs (allDevs)
+      setDevs (allDevelopers)
 
     })
  
@@ -113,30 +112,20 @@ function AddProject() {
 
 
 
-  const handleSubmit = async (e) => {
-    e.preventDefault()
-    setError("")
+  const handleFormSubmit = (values) => {
 
-    try{
-      // Object to paste
-      const docAdd = ({ 
-        title: title,
-        description: description,
+    const docAdd = { 
+      title: values.title,
+      description: values.description,
+      projectManagers: values.projectManagers,
+      developers: values.developers,
+      priority: values.priority,
+     }
 
-        projectManager: projectManager,
-        assignTo: assignTo,
-        priority: priority,
-       })
+    console.log(docAdd);
 
-      // Paste
-      addDoc(projectsColRef, docAdd)
-      alert ("Success!")
-    }
-
-    catch (e) {
-      console.log (e.message)
-    }
-  }
+    addDoc(projectsColRef, docAdd)
+  };
 
 
   return (
@@ -147,7 +136,7 @@ function AddProject() {
     <Header title="CREATE PROJECT" subtitle="Create a New User Profile" />
 
     <Formik
-      onSubmit={handleSubmit}
+      onSubmit={handleFormSubmit}
       initialValues={initialValues}
       validationSchema={checkoutSchema}
     >
@@ -194,42 +183,58 @@ function AddProject() {
               helperText={touched.description && errors.description}
               sx={{ gridColumn: "span 4" }}
             />
+        
 
-        <label>
+        <div id="checkbox-group">
           <h2> Developers </h2>
-          <div>
-              <Multiselect
-              isObject={false}
-              options={devs}
-              />
+          <div role="group" aria-labelledby="checkbox-group">
+              {developers.map(function(name, index){
+                    return <label> <Field type="checkbox" name="developers" value={name} /> {name} </label> ;
+                  })}
           </div>
-        </label>
+        </div>
+          
 
-        <label>
+        <div id="checkbox-group">
           <h2> Project Managers </h2>
-          <div>
-              <Multiselect
-              isObject={false}
-              options={projectManager2}
-              
-              />
+          <div role="group" aria-labelledby="checkbox-group">
+              {projectManagers.map(function(name, index){
+                    return <label> <Field type="checkbox" name="projectManagers" value={name} /> {name} </label> ;
+                  })}
           </div>
-        </label>
+        </div>
+          
+        
+        <div>
+            <h2> Priority </h2>
+            <Field as="select" name="priority">
+             <option value="Low"> Low </option>
+             <option value="Medium"> Medium </option>
+             <option value="High"> High </option>
+           </Field>
+        </div>
 
-        <label>
-          <h2> Proprity </h2>
-          <div>
-          <Select options={options} />
-          </div>
-        </label>
+
+
+
+
+
+
+
+
+
+        
+
+        
+          
 
         
 
           </Box>
           <Box display="flex" justifyContent="end" mt="20px">
-            <Button type="submit" color="secondary" variant="contained">
+            <Button onClick={handleSubmit} type="submit" color="secondary" variant="contained">
               Create Project
-            </Button>
+            </Button >
           </Box>
         </form>
       )}
@@ -250,27 +255,24 @@ function AddProject() {
   );
 }
 
-const phoneRegExp =
-  /^((\+[1-9]{1,4}[ -]?)|(\([0-9]{2,3}\)[ -]?)|([0-9]{2,4})[ -]?)*?[0-9]{3,4}[ -]?[0-9]{3,4}$/;
-
 const checkoutSchema = yup.object().shape({
-  firstName: yup.string().required("required"),
-  lastName: yup.string().required("required"),
-  email: yup.string().email("invalid email").required("required"),
+  title: yup.string().required("required"),
+  description: yup.string().required("required"),
+  /*email: yup.string().email("invalid email").required("required"),
   contact: yup
     .string()
     .matches(phoneRegExp, "Phone number is not valid")
     .required("required"),
   address1: yup.string().required("required"),
   address2: yup.string().required("required"),
+  */
 });
 const initialValues = {
-  firstName: "",
-  lastName: "",
-  email: "",
-  contact: "",
-  address1: "",
-  address2: "",
+  title: "",
+  description: "",
+  priority: "",
+  developers: [],
+  projectManagers: []
 };
 
 export default AddProject;
