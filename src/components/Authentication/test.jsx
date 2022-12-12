@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Box, Typography, useTheme } from "@mui/material";
+import { DataGrid } from "@mui/x-data-grid";
 import { tokens } from "../../theme";
 import { styled } from '@mui/material/styles';
 import Table from '@mui/material/Table';
@@ -9,39 +10,38 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
+
 import Header from "../../components/Header";
 
-import CancelIcon from '@mui/icons-material/Cancel';
-
 // Our databases
-import { projectsColRef } from '../../firebase.js';
+import { issuesColRef } from '../../firebase.js';
 import { addDoc, onSnapshot } from "firebase/firestore";
 
-const CurrentProject = () => {
+const CurrentIssue = ({button}) => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
-  const [projects, setProjects] = useState ();
+  const [issues, setIssues] = useState ();
 
-  // Get all projects
+  // Get all issues
   useEffect(() => {
-    onSnapshot (projectsColRef, (snapshot) => {
+    onSnapshot (issuesColRef, (snapshot) => {
       let allUsers = []
       snapshot.docs.forEach (user => {
         allUsers.push ({ ...user.data(), id: user.id})
       })
   
-      setProjects (allUsers)
+      setIssues (allUsers)
   
     })
 
     
-  }, [projectsColRef]);
+  }, [issuesColRef]);
 
   const columns = [
     
     {
-      field: "title",
-      headerName: "Title",
+      field: "project",
+      headerName: "Project",
       flex: 1,
       cellClassName: "name-column--cell",
     },
@@ -51,9 +51,9 @@ const CurrentProject = () => {
       flex: 2,
     },
     {
-      field: "projectManager",
-      headerName: "Project Manager",
-      flex: 1,
+      field: "assignTo",
+      headerName: "Assigned To",
+      flex: 2,
     },
     {
       field: "priority",
@@ -86,30 +86,12 @@ const CurrentProject = () => {
   ];
 
 
-  const StyledTableCell = styled(TableCell)(({ theme }) => ({
-    [`&.${tableCellClasses.head}`]: {
-      backgroundColor: theme.palette.common.black,
-      color: theme.palette.common.white,
-    },
-    [`&.${tableCellClasses.body}`]: {
-      fontSize: 14,
-    },
-  }));
-  
-  const StyledTableRow = styled(TableRow)(({ theme }) => ({
-    '&:nth-of-type(odd)': {
-      backgroundColor: theme.palette.action.hover,
-    },
-    // hide last border
-    '&:last-child td, &:last-child th': {
-      border: 0,
-    },
-  }));
+
   
 
   return (
     <Box m="50px">
-      <Header title="PROJECTS" subtitle="Manage all current projects" />
+      <Header title="ISSUES" subtitle="Manage all current issues" />
       <Box
         m="40px 0 0 0"
         height="50vh"
@@ -139,35 +121,14 @@ const CurrentProject = () => {
           },
         }}
       >
-        <TableContainer component={Paper}>
-          <Table sx={{ minWidth: 700 }} aria-label="customized table">
-            <TableHead>
-              <TableRow>
-                <StyledTableCell>Project</StyledTableCell>
-                <StyledTableCell align="center">Description</StyledTableCell>
-                <StyledTableCell align="center">Project Manager</StyledTableCell>
-                <StyledTableCell align="center">Priority</StyledTableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {projects && projects.map((row) => (
-                <StyledTableRow key={row.title}>
-                  <StyledTableCell component="th" scope="row">
-                    {row.title}
-                  </StyledTableCell>
-                  <StyledTableCell align="center">{row.description}</StyledTableCell>
-                  <StyledTableCell align="center">{row.projectManager}</StyledTableCell>
-                  <StyledTableCell align="center">{row.priority}</StyledTableCell>
-                </StyledTableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
-
         
+    
+
+        <DataGrid checkboxSelection rows={issues !== undefined && issues} columns={columns} />
       </Box>
+      {button}
     </Box>
   );
 };
 
-export default CurrentProject;
+export default CurrentIssue;

@@ -4,14 +4,10 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
 import React, { useState } from "react";
 import { Button } from "@mui/material";
-
-import Popup from 'react-popup';
-
 function Index() {
   const [addIssue, setAddIssue] = useState(false);
 
   function showAddIssue() {
-    Popup.alert('I am alert, nice to meet you');
     setAddIssue(true);
   }
 

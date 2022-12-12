@@ -50,10 +50,6 @@ const Account = () => {
     }
   }
 
-  if (currentUser["email"] === null)
-  {
-    console.log ("Null error!")
-  }
 
   return (
     <div>
@@ -63,7 +59,6 @@ const Account = () => {
       <h1 className='text-2xl font-bold py-4'>Account</h1>
       <p>User Email: {user && user.email}</p>
       <p>Full name: {user && currentUser["full_name"]}</p>
-      <p>Username: {user && user.displayName}</p>
       <p>Role: {user && currentUser["role"]}</p>
 
       <button onClick={handleLogout} className='border px-6 py-2 my-4'> Logout </button>
