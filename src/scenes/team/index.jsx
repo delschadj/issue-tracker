@@ -11,7 +11,12 @@ import { addDoc, onSnapshot, collection, query, where } from "firebase/firestore
 function Index() {
   const [currentUser, setCurrentUser] = useState ({})
   const {user, logout} = UserAuth()
-  const [mail, setMail] = useState(user.email)
+  const [mail, setMail] = useState()
+
+
+  useEffect(() => {
+    {user && setMail(user.email)}
+  }, [user]);
 
   const [addTeam, setTeam] = useState(false);
 

@@ -11,7 +11,6 @@ const Account = () => {
 
   const [currentUser, setCurrentUser] = useState ({});
   const {user, logout} = UserAuth();
-  const [mail, setMail] = useState(user.email);
 
   const [isBusy, setBusy] = useState(true)
 
@@ -19,17 +18,15 @@ const Account = () => {
   useEffect(()=> {
     
     const loadRabbit = async () => {
-      const q = query(users_colRef, where("email", "==", mail));
+      const q = query(users_colRef, where("email", "==", user.mail));
 
-      const unsubscribe = onSnapshot (q, (snapshot) => {
+      onSnapshot (q, (snapshot) => {
         const currentUserArray = []
         snapshot.docs.forEach (doc => {
           currentUserArray.push ({ ...doc.data(), id: doc.id})
         });
     
         setCurrentUser (currentUserArray[0])
-    
-        unsubscribe();
       })
     }
 
@@ -37,7 +34,7 @@ const Account = () => {
 
     setBusy(false);
     
-  }, [mail]);
+  }, [user]);
 
 
   const handleLogout = async () => {
