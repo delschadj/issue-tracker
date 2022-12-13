@@ -12,7 +12,7 @@ import Paper from '@mui/material/Paper';
 import Header from "../../components/Header";
 
 import {UserAuth} from "../../context/AuthContext"
-import { query, where, onSnapshot } from "firebase/firestore";
+import { query, where, onSnapshot, getDocs } from "firebase/firestore";
 
 // Our database
 import { users_colRef, issuesColRef } from '../../firebase.js';
@@ -22,7 +22,7 @@ const CurrentIssue = ({button}) => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   const [issues, setIssues] = useState ();
-  const [issuesDeveloper, setIssuesDeveloper] = useState ();
+  const [issuesDeveloper, setIssuesDeveloper] = useState ([]);
 
   const [currentUser, setCurrentUser] = useState ({});
   const {user, logout} = UserAuth();
@@ -32,23 +32,19 @@ const CurrentIssue = ({button}) => {
   useEffect(()=> {
     
     const loadRabbit = async () => {
-      const q = query(users_colRef, where("email", "==", mail));
+      const q = query(users_colRef, where("email", "==", user.email));
 
-      const unsubscribe = onSnapshot (q, (snapshot) => {
-        const currentUserArray = []
-        snapshot.docs.forEach (doc => {
-          currentUserArray.push ({ ...doc.data(), id: doc.id})
-        });
-    
-        setCurrentUser (currentUserArray[0])
-    
-        unsubscribe();
-      })
+      const querySnapshot = await getDocs(q);
+      querySnapshot.forEach((doc) => {
+        // doc.data() is never undefined for query doc snapshots
+        setCurrentUser (doc.data())
+        
+      });
     }
 
     loadRabbit();
     
-  }, [mail]);
+  }, [user]);
 
   // Get all issues
   useEffect(() => {
@@ -66,26 +62,27 @@ const CurrentIssue = ({button}) => {
 
   }, [issuesColRef]);
 
+  useEffect(() => {
+    if (currentUser["role"]  && currentUser !== undefined && issues !== undefined)
+      {
+        setIssues ([])
+        for (let i = 0; i < issues.length; i++)
+        {
+          const checkVariable = issues[i].assignTo
+          const substring = currentUser["full_name"]; 
 
-  if (issues && currentUser !== undefined)
-  {
-    for (let i = 0; i < issues.length; i++)
-    {
+          const match = checkVariable.find(element => {
+            if (element.includes(substring)) {
+              setIssues (current => [...current, issues[i]]);
+              console.log ("Found!")
+            }
+          });
 
-      const array = issues[i].assignTo
-      const substring = "Lex"; 
-
-      const match = array.find(element => {
-        if (element.includes(substring)) {
-          console.log (issues[i])
-          console.log ("Found!")
         }
-      });
+      }
+  }, [currentUser]); // Only re-run the effect if count changes
 
-    }
-    
-
-  }
+  
   
 
   const StyledTableCell = styled(TableCell)(({ theme }) => ({
@@ -125,7 +122,7 @@ const CurrentIssue = ({button}) => {
             <TableBody>
               {currentUser && (currentUser.role === "Admin" || currentUser.role === "Project Manager") && 
               
-              issues && issues.map((row) => (
+              issues.length > 0 && issues.map((row) => (
                 <StyledTableRow key={row.project}>
                   <StyledTableCell component="th" scope="row">
                     {row.project}

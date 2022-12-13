@@ -5,18 +5,12 @@ import CurrentTeam from "./CurrentTeam.jsx";
 
 import {UserAuth} from "../../context/AuthContext"
 import { users_colRef } from '../../firebase';
-import { addDoc, onSnapshot, collection, query, where } from "firebase/firestore";
+import { getDocs, onSnapshot, collection, query, where } from "firebase/firestore";
 
 
 function Index() {
   const [currentUser, setCurrentUser] = useState ({})
   const {user, logout} = UserAuth()
-  const [mail, setMail] = useState()
-
-
-  useEffect(() => {
-    {user && setMail(user.email)}
-  }, [user]);
 
   const [addTeam, setTeam] = useState(false);
 
@@ -28,28 +22,23 @@ function Index() {
     setTeam(false);
   }
 
-  // Get current user
+  // Get current user once
   useEffect(()=> {
-    setMail (user.email)
     
     const loadRabbit = async () => {
-      const q = query(users_colRef, where("email", "==", mail));
+      const q = query(users_colRef, where("email", "==", user.email));
 
-      const unsubscribe = onSnapshot (q, (snapshot) => {
-        const currentUserArray = []
-        snapshot.docs.forEach (doc => {
-          currentUserArray.push ({ ...doc.data(), id: doc.id})
-        });
-    
-        setCurrentUser (currentUserArray[0])
-    
-        unsubscribe();
-      })
+      const querySnapshot = await getDocs(q);
+      querySnapshot.forEach((doc) => {
+        // doc.data() is never undefined for query doc snapshots
+        setCurrentUser (doc.data())
+        
+      });
     }
 
     loadRabbit();
     
-  }, [mail]);
+  }, [user]);
 
   return (
     <div className="Issues">

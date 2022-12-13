@@ -1,10 +1,10 @@
 import React, {useState, useEffect, useRef} from 'react';
 import { useNavigate } from 'react-router-dom';
 import {UserAuth} from "../../context/AuthContext"
-import { query, where, onSnapshot } from "firebase/firestore";
+import { query, where, getDocs } from "firebase/firestore";
 
 // Our database
-import { users_colRef, upload } from '../../firebase.js';
+import { users_colRef } from '../../firebase.js';
 
 const Account = () => {
   const navigate = useNavigate();
@@ -12,27 +12,21 @@ const Account = () => {
   const [currentUser, setCurrentUser] = useState ({});
   const {user, logout} = UserAuth();
 
-  const [isBusy, setBusy] = useState(true)
-
   // Get current user once
   useEffect(()=> {
     
     const loadRabbit = async () => {
-      const q = query(users_colRef, where("email", "==", user.mail));
+      const q = query(users_colRef, where("email", "==", user.email));
 
-      onSnapshot (q, (snapshot) => {
-        const currentUserArray = []
-        snapshot.docs.forEach (doc => {
-          currentUserArray.push ({ ...doc.data(), id: doc.id})
-        });
-    
-        setCurrentUser (currentUserArray[0])
-      })
+      const querySnapshot = await getDocs(q);
+      querySnapshot.forEach((doc) => {
+        // doc.data() is never undefined for query doc snapshots
+        setCurrentUser (doc.data())
+        
+      });
     }
 
     loadRabbit();
-
-    setBusy(false);
     
   }, [user]);
 
@@ -50,8 +44,6 @@ const Account = () => {
 
   return (
     <div>
-      {isBusy ? ( <h1>Loading</h1>) : 
-      (
       <div className='max-w-[600px] mx-auto my-16 p-4'>
       <h1 className='text-2xl font-bold py-4'>Account</h1>
       <p>User Email: {user && user.email}</p>
@@ -60,7 +52,6 @@ const Account = () => {
 
       <button onClick={handleLogout} className='border px-6 py-2 my-4'> Logout </button>
       </div>
-      )}
     </div>
 
     
