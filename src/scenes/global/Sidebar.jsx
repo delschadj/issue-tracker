@@ -17,10 +17,10 @@ import TimelineOutlinedIcon from "@mui/icons-material/TimelineOutlined";
 import MenuOutlinedIcon from "@mui/icons-material/MenuOutlined";
 import MapOutlinedIcon from "@mui/icons-material/MapOutlined";
 
-import { query, where, onSnapshot } from "firebase/firestore";
+import { query, where, getDocs  } from "firebase/firestore";
 
 // Our database
-import { users_colRef, upload } from '../../firebase.js';
+import { users_colRef } from '../../firebase.js';
 import {UserAuth} from "../../context/AuthContext"
 
 const Item = ({ title, to, icon, selected, setSelected }) => {
@@ -47,6 +47,26 @@ const Sidebar = () => {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [selected, setSelected] = useState("Dashboard");
 
+  const {user, logout} = UserAuth();
+  const [currentUser, setCurrentUser] = useState ({});
+
+  // Get current user once
+  useEffect(()=> {
+    
+    const loadRabbit = async () => {
+      const q = query(users_colRef, where("email", "==", user.email));
+
+      const querySnapshot = await getDocs(q);
+      querySnapshot.forEach((doc) => {
+        // doc.data() is never undefined for query doc snapshots
+        setCurrentUser (doc.data())
+        
+      });
+    }
+
+    loadRabbit();
+    
+  }, [user]);
   
 
   return (
@@ -101,15 +121,15 @@ const Sidebar = () => {
             <Box mb="25px">
               <Box textAlign="center">
                 <Typography
-                  variant="h2"
+                  variant="h3"
                   color={colors.grey[100]}
                   fontWeight="bold"
                   sx={{ m: "10px 0 0 0" }}
                 >
-                  Username here
+                  {user!== undefined && currentUser["full_name"] }
                 </Typography>
                 <Typography variant="h5" color={colors.greenAccent[500]}>
-                  Role
+                  {user!== undefined && currentUser["role"] }
                 </Typography>
               </Box>
             </Box>

@@ -1,69 +1,182 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import Avatar from '@mui/material/Avatar';
+import Button from '@mui/material/Button';
+import CssBaseline from '@mui/material/CssBaseline';
+import TextField from '@mui/material/TextField';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Checkbox from '@mui/material/Checkbox';
+import Link from '@mui/material/Link';
+import Grid from '@mui/material/Grid';
+import Box from '@mui/material/Box';
+import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
+import Typography from '@mui/material/Typography';
+import Container from '@mui/material/Container';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
+
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import FormControl from '@mui/material/FormControl';
+import Select, { SelectChangeEvent } from '@mui/material/Select';
+
+import { users_colRef } from '../../firebase.js';
+import { addDoc } from "firebase/firestore";
+import { useNavigate } from 'react-router-dom';
 import {UserAuth} from "../../context/AuthContext"
 
-const Signup = ({ setEmailApp }) => {
+function Copyright(props) {
+  return (
+    <Typography variant="body2" color="text.secondary" align="center" {...props}>
+      {'Copyright © '}
+      <Link color="inherit" href="https://mui.com/">
+        Delschad Jankir
+      </Link>{' '}
+      {new Date().getFullYear()}
+      {'.'}
+    </Typography>
+  );
+}
 
-  const [email, setEmail] = useState ("")
-  const [username, setUsername] = useState ("")
-  const [password, setPassword] = useState ("")
+const theme = createTheme();
+
+export default function SignUp() {
+  const [role, setRole] = useState ("Developer")
   const [error, setError] = useState ("")
   const {createUser} = UserAuth();
   const navigate = useNavigate ();
 
-  const handleSubmit = async (e) => {
-    e.preventDefault()
+  const handleChange = (event) => {
+    setRole(event.target.value);
+  };
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
     setError("")
+    const data = new FormData(event.currentTarget);
 
     try{
-      setEmailApp (email)
-      await createUser (username, email, password)
-      navigate ("/welcome")
+      const docAdd = ({ 
+        full_name: data.get('full_name'),
+        username: data.get('username'),
+        email: data.get('email'),
+        role: role,
+       })
+
+       addDoc(users_colRef, docAdd)
+       await createUser (
+        data.get('username'), 
+        data.get('email'), 
+        data.get('password')
+       )
+       navigate ("/home")
+       
+      
     }
     catch (e) {
       console.log (e.message)
     }
-  }
+  };
 
   return (
-    <div className='max-w-[700px] mx-auto my-16 p-4'>
-      <div>
-        <h1 className='text-2xl font-bold py-2'>Sign up for a free account</h1>
-        <p className='py-2'>
-          Already have an account yet?{' '}
-          <Link to='/' className='underline'>
-            Login.
-          </Link>
-        </p>
-      </div>
+    <ThemeProvider theme={theme}>
+      <Container component="main" maxWidth="xs">
+        <CssBaseline />
+        <Box
+          sx={{
+            marginTop: 8,
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+          }}
+        >
+          <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
+            <LockOutlinedIcon />
+          </Avatar>
+          <Typography component="h1" variant="h5">
+            Sign up
+          </Typography>
+          <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 3 }}>
+            <Grid container spacing={2}>
+              <Grid item xs={12}>
+                <TextField
+                  autoComplete="full_name"
+                  name="full_name"
+                  required
+                  fullWidth
+                  id="full_name"
+                  label="Full Name"
+                  autoFocus
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <TextField
+                  required
+                  fullWidth
+                  id="username"
+                  label="Username"
+                  name="username"
+                  autoComplete="username"
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <TextField
+                  required
+                  fullWidth
+                  id="email"
+                  label="Email Address"
+                  name="email"
+                  autoComplete="email"
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <TextField
+                  required
+                  fullWidth
+                  name="password"
+                  label="Password"
+                  type="password"
+                  id="password"
+                  autoComplete="new-password"
+                />
+              </Grid>
 
-      <form id='signup' className='signup' onSubmit={handleSubmit}>
+              <Grid item xs={12}>
 
-      <div className='flex flex-col py-2'>
-          <label for="username" className="py-2 font-medium">Username</label>
-          <input onChange={(e) => setUsername(e.target.value)} className='border p-3' type="text"></input>
-        </div>
+              <FormControl fullWidth>
+                <InputLabel id="role">Role</InputLabel>
+                <Select
+                  labelId="role"
+                  id="role"
+                  value={role}
+                  label="role"
+                  onChange={handleChange}
+                >
+                  <MenuItem value={"Developer"}>Developer</MenuItem>
+                  <MenuItem value={"Project Manager"}>Project Manager</MenuItem>
+                </Select>
+              </FormControl>
 
-        <div className='flex flex-col py-2'>
-          <label for="email" className="py-2 font-medium">Email Adress</label>
-          <input name='email' onChange={(e) => setEmail(e.target.value)} className='border p-3' type="email"></input>
-        </div>
-
-        <div className='flex flex-col py-2'>
-          <label className="py-2 font-medium">Password</label>
-          <input onChange={(e) => setPassword(e.target.value)} className='border p-3' type="password"></input>
-        </div>
-
-        
-
-        <button className='border border-blue-500 bg-blue-600 hover:bg-blue-500 w-full p-4 my-2 text-white'>
-          Sign Up
-        </button>
-
-      </form>
-     
-    </div>
+              </Grid>
+              
+            </Grid>
+            <Button
+              type="submit"
+              fullWidth
+              variant="contained"
+              sx={{ mt: 3, mb: 2 }}
+            >
+              Sign Up
+            </Button>
+            <Grid container justifyContent="flex-end">
+              <Grid item>
+                <Link href="/login" variant="body2">
+                  Already have an account? Sign in
+                </Link>
+              </Grid>
+            </Grid>
+          </Box>
+        </Box>
+        <Copyright sx={{ mt: 5 }} />
+      </Container>
+    </ThemeProvider>
   );
-};
-
-export default Signup;
+}

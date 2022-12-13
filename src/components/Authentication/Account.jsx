@@ -40,7 +40,7 @@ const Account = () => {
   const handleLogout = async () => {
     try {
       await logout()
-      navigate ("/")
+      navigate ("/login")
     }
     catch (e) {
       console.log (e.message)
