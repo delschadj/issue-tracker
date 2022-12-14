@@ -63,7 +63,7 @@ const CurrentIssue = ({button}) => {
   }, [issuesColRef]);
 
   useEffect(() => {
-    if (currentUser["role"]  && currentUser !== undefined && issues !== undefined)
+    if (currentUser["role"] === "Developer"  && currentUser !== undefined && issues !== undefined)
       {
         setIssues ([])
         for (let i = 0; i < issues.length; i++)
@@ -80,7 +80,7 @@ const CurrentIssue = ({button}) => {
 
         }
       }
-  }, [currentUser]); // Only re-run the effect if count changes
+  }, [currentUser]);
 
   
   

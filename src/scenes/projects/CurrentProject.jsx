@@ -109,7 +109,7 @@ const CurrentProject = () => {
 
   return (
     <Box m="50px">
-      <Header title="PROJECTS" subtitle="Manage all current projects" />
+      <Header title="PROJECTS" subtitle="All current projects" />
       <Box
         m="40px 0 0 0"
         height="50vh"
