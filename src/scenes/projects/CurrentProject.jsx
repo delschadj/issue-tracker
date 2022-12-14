@@ -10,6 +10,8 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import Header from "../../components/Header";
+import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
+import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
 
 import CancelIcon from '@mui/icons-material/Cancel';
 
@@ -21,6 +23,9 @@ const CurrentProject = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   const [projects, setProjects] = useState ();
+
+  const [currentlySelected, setCurrentlySelected] = useState ("")
+  const [order, setOrder] = useState ("ASC")
 
   // Get all projects
   useEffect(() => {
@@ -36,6 +41,30 @@ const CurrentProject = () => {
 
     
   }, [projectsColRef]);
+
+  const sorting = (col) => {
+    if (order === "ASC") {
+      console.log (col + order)
+
+      const sorted = [...projects].sort ((a,b) =>
+      a[col].toLowerCase() > a[col].toLowerCase() ? 1 : -1 )
+      setProjects (sorted)
+      setCurrentlySelected (col)
+
+      setOrder ("DSC")
+    }
+
+    else {
+      console.log (col + order)
+
+      const sorted = [...projects].sort ((a,b) =>
+      a[col].toLowerCase() < a[col].toLowerCase() ? 1 : -1 )
+      setProjects (sorted)
+      setCurrentlySelected (col)
+
+      setOrder ("ASC")
+    }
+  }
 
   const columns = [
     
@@ -143,10 +172,54 @@ const CurrentProject = () => {
           <Table sx={{ minWidth: 700 }} aria-label="customized table">
             <TableHead>
               <TableRow>
-                <StyledTableCell>Project</StyledTableCell>
-                <StyledTableCell align="center">Description</StyledTableCell>
-                <StyledTableCell align="center">Project Manager</StyledTableCell>
-                <StyledTableCell align="center">Priority</StyledTableCell>
+                <StyledTableCell onClick={ ()=> {sorting ("title")}}>
+                { currentlySelected ===  "title" ? 
+                  <>
+                    {order === "ASC" ? 
+                    <>
+                      <b>Title</b>
+                      <ArrowDropUpIcon/>
+                    </>  
+                      : 
+                    <>
+                      <b>Title</b>
+                      <ArrowDropDownIcon/>
+                    </> 
+                    }
+
+                  </> 
+                  : 
+                  <p>Title</p> }
+                </StyledTableCell>
+
+                <StyledTableCell onClick={ ()=> {sorting ("description")}} align="center">
+                  { currentlySelected ===  "description" ? 
+                  <>
+                    <b>Description</b>
+                  </> 
+                  : 
+                  <p>Description</p> }
+
+                  </StyledTableCell>
+
+                <StyledTableCell onClick={ ()=> {sorting ("projectManager")}} align="center">
+                { currentlySelected ===  "projectManager" ? 
+                  <>  
+                    <b>Project Manager</b>
+                  </> 
+                  : 
+                  <p>Project Manager</p> }
+                </StyledTableCell>
+
+                <StyledTableCell onClick={ ()=> {sorting ("priority")}} align="center">
+                { currentlySelected ===  "priority" ? 
+                  <>
+                    <b>Priority</b>
+                  </> 
+                  : 
+                  <p>Priority</p> }
+                </StyledTableCell>
+
               </TableRow>
             </TableHead>
             <TableBody>
