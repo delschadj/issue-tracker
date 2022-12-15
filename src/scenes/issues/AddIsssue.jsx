@@ -23,8 +23,6 @@ const AddIssue = ({button}) => {
     { value: 'High', label: 'High' }
   ]
 
-  const [projectManagers, setProjectManagers] = useState ([])
-
   // Get all users
   useEffect(() => {
     onSnapshot (users_colRef, (snapshot) => {
@@ -36,7 +34,6 @@ const AddIssue = ({button}) => {
       setUsers (allUsers)
   
     })
-
     
   }, [users_colRef]);
   
@@ -116,9 +113,9 @@ const AddIssue = ({button}) => {
         touched,
         handleBlur,
         handleChange,
-        handleSubmit,
+        handleFormSubmit,
       }) => (
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleFormSubmit}>
           <Box
             display="grid"
             gap="30px"
@@ -170,8 +167,8 @@ const AddIssue = ({button}) => {
 
           </Box>
           <Box display="flex" justifyContent="center" mt="60px">
-            <Button onClick={handleSubmit} type="submit" variant="contained">
-              Create Project
+            <Button onClick={handleFormSubmit} type="submit" variant="contained">
+              Add Issue
             </Button >
           </Box>
         </form>
