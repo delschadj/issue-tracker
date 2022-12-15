@@ -13,15 +13,11 @@ import Header from "../../components/Header";
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
 
-import CancelIcon from '@mui/icons-material/Cancel';
-
 // Our databases
 import { projectsColRef } from '../../firebase.js';
 import { addDoc, onSnapshot } from "firebase/firestore";
 
 const CurrentProject = () => {
-  const theme = useTheme();
-  const colors = tokens(theme.palette.mode);
   const [projects, setProjects] = useState ();
 
   const [currentlySelected, setCurrentlySelected] = useState ("")
@@ -42,77 +38,47 @@ const CurrentProject = () => {
     
   }, [projectsColRef]);
 
-  const sorting = (col) => {
+  // Sorting algorithm
+  function dynamicSort(property) {
+    var sortOrder = 1;
+    if(property[0] === "-") {
+        sortOrder = -1;
+        property = property.substr(1);
+    }
+    
     if (order === "ASC") {
-      console.log (col + order)
-
-      const sorted = [...projects].sort ((a,b) =>
-      a[col].toLowerCase() > a[col].toLowerCase() ? 1 : -1 )
-      setProjects (sorted)
-      setCurrentlySelected (col)
-
-      setOrder ("DSC")
+      return function (a,b) {
+        var result = (a[property] < b[property]) ? -1 : (a[property] > b[property]) ? 1 : 0;
+        return result * sortOrder;
+      }
     }
 
     else {
-      console.log (col + order)
+      return function (b,a) {
+        var result = (a[property] < b[property]) ? -1 : (a[property] > b[property]) ? 1 : 0;
+        return result * sortOrder;
+      }
+    }
+}
 
-      const sorted = [...projects].sort ((a,b) =>
-      a[col].toLowerCase() < a[col].toLowerCase() ? 1 : -1 )
-      setProjects (sorted)
+  // Sorting
+  const sorting = (col) => {
+    if (order === "ASC") {
+
+      setProjects (projects.sort( dynamicSort(col) ));
       setCurrentlySelected (col)
+      setOrder ("DSC")
 
+    }
+
+    else {
+
+      setProjects (projects.sort( dynamicSort(col) ));
+      setCurrentlySelected (col)
       setOrder ("ASC")
+
     }
   }
-
-  const columns = [
-    
-    {
-      field: "title",
-      headerName: "Title",
-      flex: 1,
-      cellClassName: "name-column--cell",
-    },
-    {
-      field: "description",
-      headerName: "Description",
-      flex: 2,
-    },
-    {
-      field: "projectManager",
-      headerName: "Project Manager",
-      flex: 1,
-    },
-    {
-      field: "priority",
-      headerName: "Priority",
-      flex: 1,
-      renderCell: ({ row: { priority } }) => {
-        return (
-          <Box
-            width="60%"
-            m="0 auto"
-            p="5px"
-            display="flex"
-            justifyContent="center"
-            backgroundColor={
-              priority === "High"
-                ? colors.redAccent[600]
-                : priority === "Medium"
-                ? colors.greenAccent[600]
-                : colors.greenAccent[600]
-            }
-            borderRadius="4px"
-          >
-            <Typography color={colors.grey[0]} sx={{ ml: "5px" }}>
-              {priority}
-            </Typography>
-          </Box>
-        );
-      },
-    },
-  ];
 
 
   const StyledTableCell = styled(TableCell)(({ theme }) => ({
@@ -139,37 +105,10 @@ const CurrentProject = () => {
   return (
     <Box m="50px">
       <Header title="PROJECTS" subtitle="All current projects" />
-      <Box
-        m="40px 0 0 0"
-        height="50vh"
-        sx={{
-          "& .MuiDataGrid-root": {
-            border: "none",
-          },
-          "& .MuiDataGrid-cell": {
-            borderBottom: "none",
-          },
-          "& .name-column--cell": {
-            color: colors.greenAccent[300],
-          },
-          "& .MuiDataGrid-columnHeaders": {
-            backgroundColor: colors.blueAccent[700],
-            borderBottom: "none",
-          },
-          "& .MuiDataGrid-virtualScroller": {
-            backgroundColor: colors.primary[400],
-          },
-          "& .MuiDataGrid-footerContainer": {
-            borderTop: "none",
-            backgroundColor: colors.blueAccent[700],
-          },
-          "& .MuiCheckbox-root": {
-            color: `${colors.greenAccent[200]} !important`,
-          },
-        }}
-      >
+
         <TableContainer component={Paper}>
           <Table sx={{ minWidth: 700 }} aria-label="customized table">
+
             <TableHead>
               <TableRow>
                 <StyledTableCell onClick={ ()=> {sorting ("title")}}>
@@ -195,7 +134,17 @@ const CurrentProject = () => {
                 <StyledTableCell onClick={ ()=> {sorting ("description")}} align="center">
                   { currentlySelected ===  "description" ? 
                   <>
-                    <b>Description</b>
+                    {order === "ASC" ? 
+                    <>
+                      <b>Description</b>
+                      <ArrowDropUpIcon/>
+                    </>  
+                      : 
+                    <>
+                      <b>Description</b>
+                      <ArrowDropDownIcon/>
+                    </> 
+                    }
                   </> 
                   : 
                   <p>Description</p> }
@@ -205,7 +154,17 @@ const CurrentProject = () => {
                 <StyledTableCell onClick={ ()=> {sorting ("projectManager")}} align="center">
                 { currentlySelected ===  "projectManager" ? 
                   <>  
-                    <b>Project Manager</b>
+                    {order === "ASC" ? 
+                    <>
+                      <b>Project Manager</b>
+                      <ArrowDropUpIcon/>
+                    </>  
+                      : 
+                    <>
+                      <b>Project Manager</b>
+                      <ArrowDropDownIcon/>
+                    </> 
+                    }
                   </> 
                   : 
                   <p>Project Manager</p> }
@@ -214,7 +173,17 @@ const CurrentProject = () => {
                 <StyledTableCell onClick={ ()=> {sorting ("priority")}} align="center">
                 { currentlySelected ===  "priority" ? 
                   <>
-                    <b>Priority</b>
+                    {order === "ASC" ? 
+                    <>
+                      <b>Priority</b>
+                      <ArrowDropUpIcon/>
+                    </>  
+                      : 
+                    <>
+                      <b>Priority</b>
+                      <ArrowDropDownIcon/>
+                    </> 
+                    }
                   </> 
                   : 
                   <p>Priority</p> }
@@ -222,6 +191,7 @@ const CurrentProject = () => {
 
               </TableRow>
             </TableHead>
+
             <TableBody>
               {projects && projects.map((row) => (
                 <StyledTableRow key={row.title}>
@@ -237,8 +207,6 @@ const CurrentProject = () => {
           </Table>
         </TableContainer>
 
-        
-      </Box>
     </Box>
   );
 };

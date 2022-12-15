@@ -1,10 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { Box, Typography, useTheme } from "@mui/material";
-import { DataGrid } from "@mui/x-data-grid";
-import { tokens } from "../../theme";
-import AdminPanelSettingsOutlinedIcon from "@mui/icons-material/AdminPanelSettingsOutlined";
-import LockOpenOutlinedIcon from "@mui/icons-material/LockOpenOutlined";
-import SecurityOutlinedIcon from "@mui/icons-material/SecurityOutlined";
 import Header from "../../components/Header";
 
 import { styled } from '@mui/material/styles';
@@ -16,14 +11,18 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 
+import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
+import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
+
 // Our databases
 import { users_colRef } from '../../firebase.js';
 import { addDoc, onSnapshot } from "firebase/firestore";
 
 const Team = ({currentUserApp}) => {
-  const theme = useTheme();
-  const colors = tokens(theme.palette.mode);
   const [users, setUsers] = useState ();
+
+  const [currentlySelected, setCurrentlySelected] = useState ("")
+  const [order, setOrder] = useState ("ASC")
 
   // Get all users
   useEffect(() => {
@@ -38,50 +37,48 @@ const Team = ({currentUserApp}) => {
     
   }, [users_colRef]);
 
-  const columns = [
-    {
-      field: "full_name",
-      headerName: "Name",
-      flex: 1,
-      cellClassName: "name-column--cell",
-    },
-    {
-      field: "email",
-      headerName: "Email",
-      flex: 1,
-    },
-    {
-      field: "role",
-      headerName: "Access Level",
-      flex: 1,
-      renderCell: ({ row: { role } }) => {
-        return (
-          <Box
-            width="60%"
-            m="0 auto"
-            p="5px"
-            display="flex"
-            justifyContent="center"
-            backgroundColor={
-                role === "admin"
-                ? colors.greenAccent[600]
-                : role === "manager"
-                ? colors.greenAccent[700]
-                : colors.greenAccent[700]
-            }
-            borderRadius="4px"
-          >
-            {role === "Admin" && <AdminPanelSettingsOutlinedIcon />}
-            {role === "Project Manager" && <SecurityOutlinedIcon />}
-            {role === "Developer" && <LockOpenOutlinedIcon />}
-            <Typography color={colors.grey[100]} sx={{ ml: "5px" }}>
-              {role}
-            </Typography>
-          </Box>
-        );
-      },
-    },
-  ];
+  // Sorting algorithm
+  function dynamicSort(property) {
+      var sortOrder = 1;
+      if(property[0] === "-") {
+          sortOrder = -1;
+          property = property.substr(1);
+      }
+      
+      if (order === "ASC") {
+        return function (a,b) {
+          var result = (a[property] < b[property]) ? -1 : (a[property] > b[property]) ? 1 : 0;
+          return result * sortOrder;
+        }
+      }
+
+      else {
+        return function (b,a) {
+          var result = (a[property] < b[property]) ? -1 : (a[property] > b[property]) ? 1 : 0;
+          return result * sortOrder;
+        }
+      }
+  }
+
+  // Sorting
+  const sorting = (col) => {
+
+    if (order === "ASC") {
+
+      setUsers (users.sort( dynamicSort(col) ));
+      setCurrentlySelected (col)
+      setOrder ("DSC")
+      
+    }
+
+    else {
+
+      setUsers (users.sort( dynamicSort(col) ))
+      setCurrentlySelected (col)
+      setOrder ("ASC")
+      
+    }
+  }
 
   const StyledTableCell = styled(TableCell)(({ theme }) => ({
     [`&.${tableCellClasses.head}`]: {
@@ -106,44 +103,74 @@ const Team = ({currentUserApp}) => {
   return (
     <Box m="50px">
       <Header title="TEAM" subtitle="Team Members" />
-      <Box
-        m="40px 0 0 0"
-        height="50vh"
-        sx={{
-          "& .MuiDataGrid-root": {
-            border: "none",
-          },
-          "& .MuiDataGrid-cell": {
-            borderBottom: "none",
-          },
-          "& .name-column--cell": {
-            color: colors.greenAccent[300],
-          },
-          "& .MuiDataGrid-columnHeaders": {
-            backgroundColor: colors.blueAccent[700],
-            borderBottom: "none",
-          },
-          "& .MuiDataGrid-virtualScroller": {
-            backgroundColor: colors.primary[400],
-          },
-          "& .MuiDataGrid-footerContainer": {
-            borderTop: "none",
-            backgroundColor: colors.blueAccent[700],
-          },
-          "& .MuiCheckbox-root": {
-            color: `${colors.greenAccent[200]} !important`,
-          },
-        }}
-      >
+      
          <TableContainer component={Paper}>
           <Table sx={{ minWidth: 700 }} aria-label="customized table">
-            <TableHead>
+
+          <TableHead>
               <TableRow>
-                <StyledTableCell>Full Name</StyledTableCell>
-                <StyledTableCell align="center">Email</StyledTableCell>
-                <StyledTableCell align="center">Role</StyledTableCell>
+                <StyledTableCell onClick={ ()=> {sorting ("full_name")}}>
+                { currentlySelected ===  "full_name" ? 
+                  <>
+                    {order === "ASC" ? 
+                    <>
+                      <b>Full name</b>
+                      <ArrowDropUpIcon/>
+                    </>  
+                      : 
+                    <>
+                      <b>Full name</b>
+                      <ArrowDropDownIcon/>
+                    </> 
+                    }
+
+                  </> 
+                  : 
+                  <p>Full name</p> }
+                </StyledTableCell>
+
+                <StyledTableCell onClick={ ()=> {sorting ("email")}} align="center">
+                  { currentlySelected ===  "email" ? 
+                  <>
+                    {order === "ASC" ? 
+                    <>
+                      <b>Email</b>
+                      <ArrowDropUpIcon/>
+                    </>  
+                      : 
+                    <>
+                      <b>Email</b>
+                      <ArrowDropDownIcon/>
+                    </> 
+                    }
+                  </> 
+                  : 
+                  <p>Email</p> }
+
+                  </StyledTableCell>
+
+                <StyledTableCell onClick={ ()=> {sorting ("role")}} align="center">
+                { currentlySelected ===  "role" ? 
+                  <>  
+                    {order === "ASC" ? 
+                    <>
+                      <b>Role</b>
+                      <ArrowDropUpIcon/>
+                    </>  
+                      : 
+                    <>
+                      <b>Role</b>
+                      <ArrowDropDownIcon/>
+                    </> 
+                    }
+                  </> 
+                  : 
+                  <b>Role</b> }
+                </StyledTableCell>
+
               </TableRow>
             </TableHead>
+
             <TableBody>
               {users && users.map((row) => (
                 <StyledTableRow key={row.full_name}>
@@ -157,7 +184,7 @@ const Team = ({currentUserApp}) => {
             </TableBody>
           </Table>
         </TableContainer>
-      </Box>
+
     </Box>
   );
 };

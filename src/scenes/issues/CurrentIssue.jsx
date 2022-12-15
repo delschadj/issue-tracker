@@ -11,22 +11,23 @@ import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import Header from "../../components/Header";
 
+import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
+import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
+
 import {UserAuth} from "../../context/AuthContext"
 import { query, where, onSnapshot, getDocs } from "firebase/firestore";
 
 // Our database
 import { users_colRef, issuesColRef } from '../../firebase.js';
-import { deepCopy } from "@firebase/util";
 
 const CurrentIssue = ({button}) => {
-  const theme = useTheme();
-  const colors = tokens(theme.palette.mode);
   const [issues, setIssues] = useState ();
-  const [issuesDeveloper, setIssuesDeveloper] = useState ([]);
 
   const [currentUser, setCurrentUser] = useState ({});
   const {user, logout} = UserAuth();
-  const [mail, setMail] = useState(user.email);
+
+  const [currentlySelected, setCurrentlySelected] = useState ("")
+  const [order, setOrder] = useState ("ASC")
 
   // Get current user once
   useEffect(()=> {
@@ -94,6 +95,71 @@ const CurrentIssue = ({button}) => {
       fontSize: 14,
     },
   }));
+
+  // Sorting algorithm
+  function dynamicSort(property) {
+    var sortOrder = 1;
+    if(property[0] === "-") {
+        sortOrder = -1;
+        property = property.substr(1);
+    }
+    
+    if (order === "ASC") {
+      return function (a,b) {
+        var result = (a[property] < b[property]) ? -1 : (a[property] > b[property]) ? 1 : 0;
+        return result * sortOrder;
+      }
+    }
+
+    else {
+      return function (b,a) {
+        var result = (a[property] < b[property]) ? -1 : (a[property] > b[property]) ? 1 : 0;
+        return result * sortOrder;
+      }
+    }
+}
+
+  // Sorting
+  const sorting = (col) => {
+
+    // If assignTo is checked -> Sort by number of elements
+    if (col === "assignTo") {
+
+      if (order === "ASC") {
+        const sorted = [...issues].sort ((a,b) =>
+        a[col].length > a[col].length ? 1 : -1 )
+        setIssues (sorted)
+      }
+
+      else {
+        const sorted = [...issues].sort ((a,b) =>
+        a[col].length < a[col].length ? 1 : -1 )
+        setIssues (sorted)
+      }
+
+      setCurrentlySelected (col)
+      setOrder ("DSC")
+
+    }
+
+    // Every other field
+    else {
+
+      setIssues (issues.sort( dynamicSort(col) ));
+      setCurrentlySelected (col)
+
+      if (order === "ASC") {
+        setOrder ("DSC")
+      }
+      
+      else {
+        setOrder ("ASC")
+      }
+
+    }
+    
+  }
+
   
   const StyledTableRow = styled(TableRow)(({ theme }) => ({
     '&:nth-of-type(odd)': {
@@ -111,14 +177,90 @@ const CurrentIssue = ({button}) => {
 
         <TableContainer component={Paper}>
           <Table sx={{ minWidth: 700 }} aria-label="customized table">
-            <TableHead>
+
+          <TableHead>
               <TableRow>
-                <StyledTableCell>Project</StyledTableCell>
-                <StyledTableCell align="center">Description</StyledTableCell>
-                <StyledTableCell align="center">Assigned To</StyledTableCell>
-                <StyledTableCell align="center">Priority</StyledTableCell>
+                <StyledTableCell onClick={ ()=> {sorting ("project")}}>
+                { currentlySelected ===  "project" ? 
+                  <>
+                    {order === "ASC" ? 
+                    <>
+                      <b>Project</b>
+                      <ArrowDropUpIcon/>
+                    </>  
+                      : 
+                    <>
+                      <b>Project</b>
+                      <ArrowDropDownIcon/>
+                    </> 
+                    }
+
+                  </> 
+                  : 
+                  <p>Project</p> }
+                </StyledTableCell>
+
+                <StyledTableCell onClick={ ()=> {sorting ("description")}} align="center">
+                  { currentlySelected ===  "description" ? 
+                  <>
+                    {order === "ASC" ? 
+                    <>
+                      <b>Description</b>
+                      <ArrowDropUpIcon/>
+                    </>  
+                      : 
+                    <>
+                      <b>Description</b>
+                      <ArrowDropDownIcon/>
+                    </> 
+                    }
+                  </> 
+                  : 
+                  <p>Description</p> }
+
+                  </StyledTableCell>
+
+                <StyledTableCell onClick={ ()=> {sorting ("assignTo")}} align="center">
+                { currentlySelected ===  "assignTo" ? 
+                  <>  
+                    {order === "ASC" ? 
+                    <>
+                      <b> Assigned To </b>
+                      <ArrowDropUpIcon/>
+                    </>  
+                      : 
+                    <>
+                      <b> Assigned To </b>
+                      <ArrowDropDownIcon/>
+                    </> 
+                    }
+                  </> 
+                  : 
+                  <p> Assigned To </p> }
+                </StyledTableCell>
+
+                <StyledTableCell onClick={ ()=> {sorting ("priority")}} align="center">
+                { currentlySelected ===  "priority" ? 
+                  <>
+                    {order === "ASC" ? 
+                    <>
+                      <b>Priority</b>
+                      <ArrowDropUpIcon/>
+                    </>  
+                      : 
+                    <>
+                      <b>Priority</b>
+                      <ArrowDropDownIcon/>
+                    </> 
+                    }
+                  </> 
+                  : 
+                  <p>Priority</p> }
+                </StyledTableCell>
+
               </TableRow>
             </TableHead>
+
             <TableBody>
               {currentUser && (currentUser.role === "Admin" || currentUser.role === "Project Manager") && 
               
