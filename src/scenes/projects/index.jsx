@@ -1,15 +1,9 @@
 import React, { useEffect, useState } from "react";
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell, { tableCellClasses } from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
-import Paper from '@mui/material/Paper';
-import { styled } from '@mui/material/styles';
-
 import AddProject from "./AddProject.jsx";
 import CurrentProjects from "./CurrentProject.jsx";
+
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import { Button } from "@mui/material";
 
 import {UserAuth} from "../../context/AuthContext"
 import { users_colRef } from '../../firebase';
@@ -23,7 +17,7 @@ function Index() {
 
   const [addProject, setProject] = useState(false);
 
-  function showaddProject() {
+  function showAddProject() {
     setProject(true);
   }
 
@@ -58,22 +52,37 @@ function Index() {
   return (
     <div className="Issues">
       <div className="grey-card-contianer">
-        {addProject ? <AddProject /> : <CurrentProjects />}
+        {addProject ? 
+          <>
+            <AddProject 
+              button={
+              <Button onClick={() => showCurrentProjects()} 
+                type="submit" variant="contained"> 
+                <ArrowBackIcon/>  Back to current Projects
+              </Button >
+              }/> 
+          </>
+          
+          : 
+
+          <>
+            <CurrentProjects />
+
+            <Button onClick={() => showAddProject()} 
+                type="submit" variant="contained"> 
+                  Add Project 
+              </Button >
+          </>
+          }
       </div>
 
-      {currentUser.role !== undefined && currentUser.role==="Admin" &&
-        <div className="view-selection-div">
-          <button class="view-button" onClick={() => showCurrentProjects()}>
-            Current Projects
-          </button>
-          <button
-            class="view-button active-button"
-            onClick={() => showaddProject()}
-          >
-            Add Project
-          </button>
-        </div>
-      }
+
+
+
+
+
+
+      
       
     </div>
   );

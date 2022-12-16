@@ -70,10 +70,9 @@ const AddIssue = ({button}) => {
  
   }, [projectsColRef]);
 
-  console.log (projects)
 
 
-  const handleFormSubmit = (values) => {
+  const handleFormSubmit = async (values) => {
 
     const docAdd = { 
       description: values.description,
@@ -84,113 +83,106 @@ const AddIssue = ({button}) => {
 
     console.log(docAdd);
 
-    addDoc(issuesColRef, docAdd)
+    await addDoc(issuesColRef, docAdd)
     alert ("Succesfully added!")
   };
 
-  
-
 
   return (
-    <>
-
     <Box m="50px">
-    <Header title="CREATE ISSUE" subtitle="Create a New issue / ticket." />
+      <Header title="CREATE USER" subtitle="Create a New User Profile" />
 
-    <Formik
-      onSubmit={(values, { resetForm }) => {
+      <Formik
+        onSubmit={(values, { resetForm }) => {
 
-        handleFormSubmit (values);
-        resetForm();
-  
-  }}
-      initialValues={initialValues}
-      validationSchema={checkoutSchema}
-    >
-      {({
-        values,
-        errors,
-        touched,
-        handleBlur,
-        handleChange,
-        handleFormSubmit,
-      }) => (
-        <form onSubmit={handleFormSubmit}>
-          <Box
-            display="grid"
-            gap="30px"
-            gridTemplateColumns="repeat(4, minmax(0, 1fr))"
-            sx={{
-              "& > div": { gridColumn: isNonMobile ? undefined : "span 4" },
-            }}
-          >
-            <TextField
-              fullWidth
-              variant="filled"
-              type="text"
-              label="Description"
-              onBlur={handleBlur}
-              onChange={handleChange}
-              value={values.description}
-              name="description"
-              error={!!touched.description && !!errors.description}
-              helperText={touched.description && errors.description}
-              sx={{ gridColumn: "span 4" }}
-            />
-        
-        <div id="checkbox-group">
-          <h2> Project </h2>
-          <Field as="select" name="project">
-              {projects && projects.map(function(project, index){
-                    return <option value={project}> {project} </option>;
-                  })}
-          </Field>
-        </div>
+          handleFormSubmit (values);
+          resetForm();
+    
+    }}
+        initialValues={initialValues}
+        validationSchema={checkoutSchema}
+      >
+        {({
+          values,
+          errors,
+          touched,
+          handleBlur,
+          handleChange,
+          handleSubmit,
+        }) => (
+          <form onSubmit={handleSubmit}>
+            <Box
+              display="grid"
+              gap="30px"
+              gridTemplateColumns="repeat(4, minmax(0, 1fr))"
+              sx={{
+                "& > div": { gridColumn: isNonMobile ? undefined : "span 4" },
+              }}
+            >
 
-        <div id="checkbox-group">
-          <h2> Assign To </h2>
-          <div role="group" aria-labelledby="checkbox-group">
-              {developers && developers.map(function(name, index){
-                    return <label> <Field type="checkbox" name="assignTo" value={name} /> {name} </label> ;
-                  })}
-          </div>
-        </div>
-          
-        <div>
-            <h2> Priority </h2>
-            <Field as="select" name="priority">
-             <option value="Low"> Low </option>
-             <option value="Medium"> Medium </option>
-             <option value="High"> High </option>
-           </Field>
-        </div>
+              <TextField
+                fullWidth
+                variant="filled"
+                type="text"
+                label="Description"
+                onBlur={handleBlur}
+                onChange={handleChange}
+                value={values.description}
+                name="description"
+                error={!!touched.description && !!errors.description}
+                helperText={touched.description && errors.description}
+                sx={{ gridColumn: "span 4" }}
+              />
 
-          </Box>
-          <Box display="flex" justifyContent="center" mt="60px">
-            <Button onClick={handleFormSubmit} type="submit" variant="contained">
-              Add Issue
-            </Button >
-          </Box>
-        </form>
-      )}
-    </Formik>
+              <div id="checkbox-group">
+                <h2> Project </h2>
+                <Field as="select" name="project">
+                    {projects && projects.map(function(project, index){
+                          return <option value={project}> {project} </option>;
+                        })}
+                </Field>
+              </div>
 
-      {button}
+              
+
+              <div>
+                <h2> Priority </h2>
+                <Field as="select" name="priority">
+                  <option value="Low"> Low </option>
+                  <option value="Medium"> Medium </option>
+                  <option value="High"> High </option>
+                </Field>
+              </div>
+
+              <div id="checkbox-group">
+                <h2> Assign To </h2>
+                <div role="group" aria-labelledby="checkbox-group">
+                    {developers && developers.map(function(name, index){
+                          return <label> <Field type="checkbox" name="assignTo" value={name} /> {name} </label> ;
+                        })}
+                </div>
+              </div>
+
+            </Box>
+            <Box display="flex" justifyContent="end" mt="20px">
+              <Button type="submit" variant="contained">
+                Add Issue
+              </Button>
+            </Box>
+          </form>
+        )}
+      </Formik>
+
+    {button}
+
     </Box>
-
-    </>
-      
-    
-    
   );
-}
+};
 
 const checkoutSchema = yup.object().shape({
   description: yup.string().required("required"),
   project: yup.string().required("required"),
-  project: yup.string().required("required"),
   priority: yup.string().required("required"),
-  
 });
 const initialValues = {
   description: "",

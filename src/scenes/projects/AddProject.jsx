@@ -11,8 +11,9 @@ import { Field, Form, Formik, FormikProps, useField } from 'formik';
 import * as yup from "yup";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import Header from "../../components/Header";
+import { async } from "@firebase/util";
 
-function AddProject() {
+function AddProject({button}) {
 
   const isNonMobile = useMediaQuery("(min-width:600px)");
   const [users, setUsers] = useState ("")
@@ -24,6 +25,12 @@ function AddProject() {
   ]
 
   const [projectManagers, setProjectManagers] = useState ([])
+  
+  const [title, setTitle] = useState ("")
+  const [description, setDescription] = useState ("")
+
+  const [assignTo, setAssignTo] = useState ([])
+  const [priority, setPriority] = useState ("")
 
   const [error, setError] = useState ("");
 
@@ -106,7 +113,7 @@ function AddProject() {
 
 
 
-  const handleFormSubmit = (values) => {
+  const handleFormSubmit = async (values) => {
 
     const docAdd = { 
       title: values.title,
@@ -118,16 +125,16 @@ function AddProject() {
 
     console.log(docAdd);
 
-    addDoc(projectsColRef, docAdd)
+    await addDoc(projectsColRef, docAdd)
     alert ("Succesfully added!")
   };
 
 
   return (
     <>
-    {currentUser.role === "Admin" && 
+    {currentUser && currentUser.role === "Admin" && 
 
-    <Box m="50px">
+    <Box m="20px">
     <Header title="CREATE PROJECT" subtitle="Create a New User Profile" />
 
     <Formik
@@ -196,7 +203,7 @@ function AddProject() {
           
 
         <div id="checkbox-group">
-          <h2> Project Managers </h2>
+          <h2> Project Manager </h2>
           <Field as="select" name="projectManager">
               {projectManagers.map(function(projectManager, index){
                     return <option value={projectManager}> {projectManager} </option>;
@@ -216,37 +223,21 @@ function AddProject() {
 
 
 
-
-
-
-
-
-
-
-        
-
-        
-          
-
-        
-
           </Box>
           <Box display="flex" justifyContent="end" mt="20px">
-            <Button onClick={handleSubmit} type="submit" color="secondary" variant="contained">
+            <Button onClick={handleSubmit} type="submit" variant="contained">
               Create Project
             </Button >
           </Box>
         </form>
       )}
     </Formik>
+
+    {button}
+
     </Box>
     
     }
-
-    {currentUser.role !== "Admin" &&
-    <div>
-    <h1> Your current projects </h1>  
-    </div>}
 
     </>
       
@@ -258,9 +249,15 @@ function AddProject() {
 const checkoutSchema = yup.object().shape({
   title: yup.string().required("required"),
   description: yup.string().required("required"),
-  priority: yup.string().required("required"),
-  projectManager: yup.string().required("required"),
   
+  /*email: yup.string().email("invalid email").required("required"),
+  contact: yup
+    .string()
+    .matches(phoneRegExp, "Phone number is not valid")
+    .required("required"),
+  address1: yup.string().required("required"),
+  address2: yup.string().required("required"),
+  */
 });
 const initialValues = {
   title: "",

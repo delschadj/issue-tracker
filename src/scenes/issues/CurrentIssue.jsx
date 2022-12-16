@@ -9,16 +9,20 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
+import Button from '@mui/material/Button';
+import DeleteIcon from '@mui/icons-material/Delete';
+import "./Modal.css"
+
 import Header from "../../components/Header";
 
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
 
 import {UserAuth} from "../../context/AuthContext"
-import { query, where, onSnapshot, getDocs } from "firebase/firestore";
+import { query, where, onSnapshot, getDocs, deleteDoc, doc  } from "firebase/firestore";
 
 // Our database
-import { users_colRef, issuesColRef } from '../../firebase.js';
+import { users_colRef, issuesColRef, db } from '../../firebase.js';
 
 const CurrentIssue = ({button}) => {
   const [issues, setIssues] = useState ();
@@ -28,6 +32,36 @@ const CurrentIssue = ({button}) => {
 
   const [currentlySelected, setCurrentlySelected] = useState ("")
   const [order, setOrder] = useState ("ASC")
+
+  const [modal, setModal] = useState(false);
+  const [selectedIssue, setSelectedIssue] = useState ({})
+
+  const toggleModal = (issueID, issueDescription) => {
+    setSelectedIssue (
+      {issueID: issueID,
+      issueDescription: issueDescription}
+    )
+    setModal(!modal);
+  };
+
+  if(modal) {
+    document.body.classList.add('active-modal')
+  } else {
+    document.body.classList.remove('active-modal')
+  }
+
+  const deleteIssue = () => {
+    const docRef = doc(db, "issues", selectedIssue["issueID"]);
+
+      deleteDoc(docRef)
+      .then(() => {
+          console.log("Entire Document has been deleted successfully.")
+      })
+      .catch(error => {
+          console.log(error);
+      })
+
+  }
 
   // Get current user once
   useEffect(()=> {
@@ -258,6 +292,10 @@ const CurrentIssue = ({button}) => {
                   <p>Priority</p> }
                 </StyledTableCell>
 
+                <StyledTableCell align="center">
+                  <p> Done? </p>
+                </StyledTableCell>
+
               </TableRow>
             </TableHead>
 
@@ -272,6 +310,11 @@ const CurrentIssue = ({button}) => {
                   <StyledTableCell align="center">{row.description}</StyledTableCell>
                   <StyledTableCell align="center">{row.assignTo + " "}</StyledTableCell>
                   <StyledTableCell align="center">{row.priority}</StyledTableCell>
+
+                  <StyledTableCell align="center" onClick={ ()=> {toggleModal (row.id, row.description)}}>
+                  <Button variant="outlined"> Delete </Button>
+                  </StyledTableCell>
+
                 </StyledTableRow>
               ))
 
@@ -297,6 +340,27 @@ const CurrentIssue = ({button}) => {
           </Table>
         </TableContainer>
       {button}
+
+      {modal && (
+        <div className="modal">
+          <div onClick={toggleModal} className="overlay"></div>
+          <div className="modal-content">
+            <h2> Delete Issue </h2>
+            <p>
+              Do you want to delete the issue: <b>{selectedIssue["issueDescription"]}</b> ?
+            </p>
+
+            <Button onClick={() => deleteIssue ()} variant="contained" startIcon={<DeleteIcon />}>
+              Delete
+            </Button>
+
+            <button className="close-modal" onClick={toggleModal}>
+              CLOSE
+            </button>
+          </div>
+        </div>
+      )}
+
     </Box>
   );
 };

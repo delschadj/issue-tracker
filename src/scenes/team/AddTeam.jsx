@@ -18,6 +18,12 @@ const AddTeam = () => {
   const [error, setError] = useState ("")
   const {createUser} = UserAuth();
 
+  const options = [
+    { value: 'Developer', label: 'Developer' },
+    { value: 'Project Manager', label: 'Project Manager' },
+    { value: 'Admin', label: 'Admin' }
+  ]
+
   // Get all users
   useEffect(() => {
     onSnapshot (users_colRef, (snapshot) => {
@@ -48,11 +54,6 @@ const AddTeam = () => {
     alert ("Succesfully added!")
   };
 
-  const options = [
-    { value: 'Developer', label: 'Developer' },
-    { value: 'Project Manager', label: 'Project Manager' },
-    { value: 'Admin', label: 'Admin' }
-  ]
 
   return (
     <Box m="50px">
@@ -154,7 +155,7 @@ const AddTeam = () => {
 
             </Box>
             <Box display="flex" justifyContent="end" mt="20px">
-              <Button type="submit" color="secondary" variant="contained">
+              <Button type="submit" variant="contained">
                 Create New User
               </Button>
             </Box>
