@@ -16,11 +16,19 @@ import Header from "../../components/Header";
 
 import {UserAuth} from "../../context/AuthContext"
 import { users_colRef } from '../../firebase';
-import { getDocs, query, where } from "firebase/firestore";
+import { getDocs, query, where, onSnapshot } from "firebase/firestore";
+import { projectsColRef, issuesColRef } from '../../firebase.js';
 
 function Home() {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
+
+  const [projects, setProjects] = useState ();
+  const [issues, setIssues] = useState ();
+  const [users, setUsers] = useState ();
+
+  const [devCount, setDevCount] = useState (0);
+  const [projectManagerCount, setProjectManagerCount] = useState (0);
 
   const [currentUser, setCurrentUser] = useState ({});
   const {user, logout} = UserAuth()
@@ -40,6 +48,75 @@ function Home() {
     loadRabbit();
     
   }, [user]);
+
+    // Get all projects
+    useEffect(() => {
+      onSnapshot (projectsColRef, (snapshot) => {
+        let allUsers = []
+        snapshot.docs.forEach (user => {
+          allUsers.push ({ ...user.data(), id: user.id})
+        })
+    
+        setProjects (allUsers)
+    
+      })
+  
+      
+    }, [projectsColRef]);
+
+    // Get all issues
+    useEffect(() => {
+      
+      onSnapshot (issuesColRef, (snapshot) => {
+        let allUsers = []
+
+        snapshot.docs.forEach (user => {
+          allUsers.push ({ ...user.data(), id: user.id})
+        })
+    
+        setIssues (allUsers)
+    
+      })
+
+    }, [issuesColRef]);
+
+
+    // Get all users
+    useEffect(() => {
+      onSnapshot (users_colRef, (snapshot) => {
+        let allUsers = []
+        snapshot.docs.forEach (user => {
+          allUsers.push ({ ...user.data(), id: user.id})
+        })
+    
+        setUsers (allUsers)
+
+
+
+
+        var devCount = 0;
+        var projectManagerCount = 0;
+
+        for (var i = 0; i < allUsers.length; i++) {
+          if (allUsers[i]["role"] === "Developer")
+          {
+            devCount += 1;
+          }
+
+          else if (allUsers[i]["role"] === "Project Manager")
+          {
+            projectManagerCount += 1;
+          }
+        }
+
+
+        setDevCount (devCount)
+        setProjectManagerCount (projectManagerCount)
+
+
+      })
+      
+    }, [users_colRef]);
 
 
   return (
@@ -84,7 +161,7 @@ function Home() {
           justifyContent="center"
         >
           <StatBox
-            title="12,361"
+            title={projects && projects.length}
             subtitle="Projects"
             progress="0.75"
             increase="+14%"
@@ -105,7 +182,7 @@ function Home() {
           justifyContent="center"
         >
           <StatBox
-            title="5"
+            title={issues && issues.length}
             subtitle="Issues"
             progress="0.75"
             increase="+14%"
@@ -126,7 +203,7 @@ function Home() {
           justifyContent="center"
         >
           <StatBox
-            title="5"
+            title={devCount}
             subtitle="Developers"
             progress="0.75"
             increase="+14%"
@@ -147,7 +224,7 @@ function Home() {
           justifyContent="center"
         >
           <StatBox
-            title="5"
+            title={projectManagerCount}
             subtitle="Project Managers"
             progress="0.75"
             increase="+14%"

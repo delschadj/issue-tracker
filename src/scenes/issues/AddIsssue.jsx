@@ -90,7 +90,7 @@ const AddIssue = ({button}) => {
 
   return (
     <Box m="50px">
-      <Header title="CREATE USER" subtitle="Create a New User Profile" />
+      <Header title="CREATE ISSUE" subtitle="Create a New Issue/Ticket" />
 
       <Formik
         onSubmit={(values, { resetForm }) => {

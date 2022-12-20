@@ -65,14 +65,15 @@ function Index() {
           
           : 
 
-          <>
-            <CurrentProjects />
 
+          <>
+          <CurrentProjects 
+            button={
             <Button onClick={() => showAddProject()} 
-                type="submit" variant="contained"> 
-                  Add Project 
-              </Button >
-          </>
+              type="submit" variant="contained"> 
+                Add Project 
+            </Button >}/>
+        </>
           }
       </div>
 

@@ -135,7 +135,7 @@ function AddProject({button}) {
     {currentUser && currentUser.role === "Admin" && 
 
     <Box m="20px">
-    <Header title="CREATE PROJECT" subtitle="Create a New User Profile" />
+    <Header title="CREATE PROJECT" subtitle="Create a New Project" />
 
     <Formik
       onSubmit={(values, { resetForm }) => {

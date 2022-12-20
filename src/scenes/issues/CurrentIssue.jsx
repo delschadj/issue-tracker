@@ -11,7 +11,7 @@ import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import Button from '@mui/material/Button';
 import DeleteIcon from '@mui/icons-material/Delete';
-import "./Modal.css"
+import "../../../src/Modal.css"
 
 import Header from "../../components/Header";
 
@@ -41,6 +41,7 @@ const CurrentIssue = ({button}) => {
       {issueID: issueID,
       issueDescription: issueDescription}
     )
+    
     setModal(!modal);
   };
 
@@ -60,7 +61,6 @@ const CurrentIssue = ({button}) => {
       .catch(error => {
           console.log(error);
       })
-
   }
 
   // Get current user once
@@ -109,7 +109,6 @@ const CurrentIssue = ({button}) => {
           const match = checkVariable.find(element => {
             if (element.includes(substring)) {
               setIssues (current => [...current, issues[i]]);
-              console.log ("Found!")
             }
           });
 
@@ -117,8 +116,6 @@ const CurrentIssue = ({button}) => {
       }
   }, [currentUser]);
 
-  
-  
 
   const StyledTableCell = styled(TableCell)(({ theme }) => ({
     [`&.${tableCellClasses.head}`]: {
