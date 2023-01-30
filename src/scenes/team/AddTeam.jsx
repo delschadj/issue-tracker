@@ -11,7 +11,7 @@ import Header from "../../components/Header";
 import { users_colRef } from '../../firebase';
 import {UserAuth} from "../../context/AuthContext"
 
-const AddTeam = () => {
+const AddTeam = ({button}) => {
   const isNonMobile = useMediaQuery("(min-width:600px)");
   const [users, setUsers] = useState ("")
 
@@ -162,6 +162,9 @@ const AddTeam = () => {
           </form>
         )}
       </Formik>
+
+      {button}
+      
     </Box>
   );
 };

@@ -35,7 +35,7 @@ function Index() {
         <>
           <CurrentIssue 
             button={
-            <Button onClick={() => showAddIssue()} 
+            <Button style={{ marginTop: "3vh" }} onClick={() => showAddIssue()} 
               type="submit" variant="contained"> 
                 Add issue 
             </Button >}/>

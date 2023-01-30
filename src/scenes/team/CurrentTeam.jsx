@@ -18,7 +18,7 @@ import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
 import { users_colRef } from '../../firebase.js';
 import { addDoc, onSnapshot } from "firebase/firestore";
 
-const Team = ({currentUserApp}) => {
+const Team = ({button}) => {
   const [users, setUsers] = useState ();
 
   const [currentlySelected, setCurrentlySelected] = useState ("")
@@ -184,6 +184,7 @@ const Team = ({currentUserApp}) => {
             </TableBody>
           </Table>
         </TableContainer>
+        {button}
 
     </Box>
   );

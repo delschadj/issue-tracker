@@ -69,7 +69,7 @@ function Index() {
           <>
           <CurrentProjects 
             button={
-            <Button onClick={() => showAddProject()} 
+            <Button style={{ marginTop: "3vh" }} onClick={() => showAddProject()} 
               type="submit" variant="contained"> 
                 Add Project 
             </Button >}/>

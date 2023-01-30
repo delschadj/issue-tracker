@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from "react";
-
 import AddTeam from "./AddTeam.jsx";
 import CurrentTeam from "./CurrentTeam.jsx";
+
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import { Button } from "@mui/material";
 
 import {UserAuth} from "../../context/AuthContext"
 import { users_colRef } from '../../firebase';
@@ -14,7 +16,7 @@ function Index() {
 
   const [addTeam, setTeam] = useState(false);
 
-  function showaddTeam() {
+  function showAddTeam() {
     setTeam(true);
   }
 
@@ -43,23 +45,29 @@ function Index() {
   return (
     <div className="Issues">
       <div className="grey-card-contianer">
-        {addTeam ? <AddTeam /> : <CurrentTeam />}
-      </div>
+        {addTeam ? 
+        <>
+          <AddTeam 
+            button={
+            <Button onClick={() => showCurrentTeam()} 
+              type="submit" variant="contained"> 
+              <ArrowBackIcon/>  Back to current Team
+            </Button >
+            }/> 
+        </>
+        
+        : 
 
-      {currentUser.role !== undefined && currentUser.role==="Admin" &&
-        <div className="view-selection-div">
-          <button class="view-button" onClick={() => showCurrentTeam()}>
-            Current Team
-          </button>
-          <button
-            class="view-button active-button"
-            onClick={() => showaddTeam()}
-          >
-            Add Team Member
-          </button>
-        </div>
-      }
-      
+        <>
+          <CurrentTeam 
+            button={
+            <Button style={{ marginTop: "3vh" }} onClick={() => showAddTeam()} 
+              type="submit" variant="contained"> 
+                Add Team Member 
+            </Button >}/>
+        </>
+         }
+      </div>      
     </div>
   );
 }
