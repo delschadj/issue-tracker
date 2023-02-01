@@ -1,23 +1,23 @@
 {
   "files": {
     "main.css": "/issue-tracker/static/css/main.b09a58de.chunk.css",
-    "main.js": "/issue-tracker/static/js/main.f9fbf10a.chunk.js",
-    "main.js.map": "/issue-tracker/static/js/main.f9fbf10a.chunk.js.map",
+    "main.js": "/issue-tracker/static/js/main.de4dde2b.chunk.js",
+    "main.js.map": "/issue-tracker/static/js/main.de4dde2b.chunk.js.map",
     "runtime-main.js": "/issue-tracker/static/js/runtime-main.bec1d81d.js",
     "runtime-main.js.map": "/issue-tracker/static/js/runtime-main.bec1d81d.js.map",
     "static/css/2.7d31e46d.chunk.css": "/issue-tracker/static/css/2.7d31e46d.chunk.css",
-    "static/js/2.7ca1071a.chunk.js": "/issue-tracker/static/js/2.7ca1071a.chunk.js",
-    "static/js/2.7ca1071a.chunk.js.map": "/issue-tracker/static/js/2.7ca1071a.chunk.js.map",
+    "static/js/2.e452368e.chunk.js": "/issue-tracker/static/js/2.e452368e.chunk.js",
+    "static/js/2.e452368e.chunk.js.map": "/issue-tracker/static/js/2.e452368e.chunk.js.map",
     "index.html": "/issue-tracker/index.html",
     "static/css/2.7d31e46d.chunk.css.map": "/issue-tracker/static/css/2.7d31e46d.chunk.css.map",
     "static/css/main.b09a58de.chunk.css.map": "/issue-tracker/static/css/main.b09a58de.chunk.css.map",
-    "static/js/2.7ca1071a.chunk.js.LICENSE.txt": "/issue-tracker/static/js/2.7ca1071a.chunk.js.LICENSE.txt"
+    "static/js/2.e452368e.chunk.js.LICENSE.txt": "/issue-tracker/static/js/2.e452368e.chunk.js.LICENSE.txt"
   },
   "entrypoints": [
     "static/js/runtime-main.bec1d81d.js",
     "static/css/2.7d31e46d.chunk.css",
-    "static/js/2.7ca1071a.chunk.js",
+    "static/js/2.e452368e.chunk.js",
     "static/css/main.b09a58de.chunk.css",
-    "static/js/main.f9fbf10a.chunk.js"
+    "static/js/main.de4dde2b.chunk.js"
   ]
 }
