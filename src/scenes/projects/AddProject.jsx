@@ -128,11 +128,12 @@ function AddProject({button}) {
     await addDoc(projectsColRef, docAdd)
     alert ("Succesfully added!")
   };
+  
 
 
   return (
     <>
-    {currentUser && currentUser.role === "Admin" && 
+    {currentUser && currentUser.role === "Admin" && developers && 
 
     <Box m="20px">
     <Header title="CREATE PROJECT" subtitle="Create a New Project" />
@@ -237,6 +238,17 @@ function AddProject({button}) {
 
     </Box>
     
+    }
+
+    {currentUser && currentUser.role !== "Admin" && developers && 
+
+    <Box m="20px">
+    <Header title="No access" subtitle="Only admins can add projects." />
+
+    </Box>
+
+    
+
     }
 
     </>
