@@ -55,75 +55,11 @@ function App() {
         <CssBaseline/>
 
           <div className="app">
+
+          <Login setEmailApp={setEmailApp} />
           
           
-          <AuthContextProvider>
-          {currentUser !== undefined && <Sidebar isSidebar={isSidebar} />}
-            
-            
-
-            <main className="content">
-              {currentUser !== undefined && <Topbar setIsSidebar={setIsSidebar} />}
-
-              
-                
-                <Routes>
-                  
-                  <Route path='/login' element={<Login setEmailApp={setEmailApp} />} /> &&
-                  <Route  path='/signup' element={<Signup setEmailApp={setEmailApp} />} /> &&
-                  <Route  path="/welcome" element ={<Welcome emailApp={emailApp}/>}/>
-                  
-
-                  {currentUser !== undefined &&   
-                  <Route path='/home' element={
-                    <ProtectedRoute>
-                      <HomeSignedIn />
-                  </ProtectedRoute>}/>
-                  }
-
-                  {currentUser !== undefined &&
-                  <Route path='/dashboard' element={
-                    <ProtectedRoute>
-                      <Dashboard />
-                  </ProtectedRoute>}/>
-                  }
-
-                  {currentUser !== undefined &&
-                  <Route path="/issues/*" element={
-                    <ProtectedRoute>
-                      <Issues2 />
-                  </ProtectedRoute>}/>
-                  }
-
-                  {currentUser !== undefined &&
-                  <Route path='/projects' element={
-                    <ProtectedRoute>
-                      <Projects />
-                  </ProtectedRoute>}/>
-                  }
-
-                  {currentUser !== undefined &&
-                  <Route path='/team' element={
-                    <ProtectedRoute>
-                    <Team/>
-                  </ProtectedRoute>}/>
-                  }
-
-                  {currentUser !== undefined &&
-                  <Route path='/account' element={ 
-                  <ProtectedRoute> 
-                    <Account /> 
-                  </ProtectedRoute>}/>
-                  }
-
-                  
-
-
-                  
-                </Routes>
-              
-            </main>
-            </AuthContextProvider>
+          
 
           </div>
 
